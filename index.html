@@ -3,304 +3,313 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lucid Flex Calculator</title>
+<title>CRTV Sizing Calculator</title>
 
 <style>
   :root{
-    --bg: #191919;
-    --panel: rgba(255,255,255,.035);
-    --stroke2: rgba(255,255,255,.08);
-    --text: rgba(255,255,255,.92);
-    --muted: rgba(255,255,255,.62);
+    --bg:#191919;
+    --panel:#191919;
+    --stroke:rgba(255,255,255,.10);
+    --stroke2:rgba(255,255,255,.08);
 
-    --good: rgba(40,230,165,.95);
-    --goodSoft: rgba(40,230,165,.14);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.60);
 
-    --bad: rgba(255,77,109,.95);
-    --badSoft: rgba(255,77,109,.14);
+    --good:#28E6A5;
+    --warn:#FFD34D;
+    --bad:#FF4D6D;
 
-    --warn: rgba(255,211,77,.95);
-    --warnSoft: rgba(255,211,77,.14);
+    --glass:rgba(0,0,0,.20);
+    --glass2:rgba(255,255,255,.04);
 
-    --radius: 18px;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-    --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    --radius:18px;
+    --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --sans: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
   }
 
   *{ box-sizing:border-box; }
-  html,body{ height:100%; margin:0; background: var(--bg); }
-  body{ font-family: var(--sans); color: var(--text); padding: 10px; }
+  html,body{ height:100%; margin:0; background:var(--bg); }
+  body{
+    font-family:var(--sans);
+    color:var(--text);
+    padding:10px;
+  }
 
-  .wrap{ width:100%; max-width: 680px; margin: 0 auto; }
+  /* prevent iOS zoom quirks */
+  input, button{ font-size:16px; }
+
+  .wrap{ width:100%; max-width:560px; margin:0 auto; }
 
   .panel{
-    background: var(--panel);
-    border: 1px solid var(--stroke2);
-    border-radius: var(--radius);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    overflow: hidden;
+    background:var(--panel);
+    border:1px solid var(--stroke2);
+    border-radius:var(--radius);
+    overflow:hidden;
   }
 
   .top{
-    display:flex;
-    justify-content:center;
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
-  }
-
-  .chip{
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 7px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.20);
-    color: rgba(255,255,255,.88);
-    white-space: nowrap;
-  }
-
-  .content{ padding: 12px; }
-
-  .card{
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.12);
-    border-radius: 16px;
-    padding: 12px;
+    padding:12px 12px 10px;
+    border-bottom:1px solid rgba(255,255,255,.07);
   }
 
   .titleRow{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding-bottom: 10px; margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,.08);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
   }
 
-  .label{
-    font-family: var(--mono);
-    font-size: 11px;
-    color: rgba(255,255,255,.70);
+  .title{
+    font-size:16px;
+    font-weight:850;
+    letter-spacing:.2px;
   }
 
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-    font-family: var(--mono);
-    font-size: 11px;
-    color: rgba(255,255,255,.86);
-    white-space: nowrap;
-  }
-  .dot{ width:8px; height:8px; border-radius:50%; box-shadow: 0 0 0 4px rgba(255,255,255,.08); }
-
-  .row{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .field{
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.12);
-    border-radius: 14px;
-    padding: 10px;
-  }
-
-  .fieldTop{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    margin-bottom: 8px;
-  }
-
-  .help{
-    font-family: var(--mono);
-    font-size: 10px;
-    color: rgba(255,255,255,.55);
-    white-space: nowrap;
-  }
-
-  input{
-    width:100%;
-    padding: 10px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.22);
-    color: rgba(255,255,255,.92);
-    outline: none;
-    font-family: var(--mono);
-    font-size: 12px;
-  }
-
-  /* Apple glass buttons */
-  .pillBtn, .btn{
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-    color: rgba(255,255,255,.82);
-    cursor:pointer;
-    transition: transform 120ms ease, background 160ms ease;
-    user-select:none;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 28px;
-  }
-  .pillBtn:hover, .btn:hover{ background: rgba(0,0,0,.22); }
-  .pillBtn:active, .btn:active{ transform: scale(.98); }
-
-  .presetRow{
-    display:flex; flex-wrap:wrap; gap:8px;
-    margin-top: 8px;
-  }
-
-  .outputs{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .out{
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.10);
-    border-radius: 14px;
-    padding: 10px;
-    min-height: 64px;
-    display:flex; flex-direction:column; justify-content:center;
-  }
-
-  .outVal{
-    font-family: var(--mono);
-    font-size: 15px;
-    letter-spacing: .2px;
-    margin-top: 4px;
-  }
-
-  .pillRow{
-    display:flex; flex-wrap:wrap; gap:8px;
-    margin-top: 10px;
+  .formula{
+    margin-top:6px;
+    font-family:var(--mono);
+    color:rgba(255,255,255,.65);
+    font-size:12px;
+    line-height:1.35;
   }
 
   .pill{
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-    color: rgba(255,255,255,.78);
-    white-space: nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.22);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-family:var(--mono);
+    font-size:12px;
+    white-space:nowrap;
   }
 
-  .status{
-    border: 1px solid rgba(255,255,255,.10);
-    border-radius: 14px;
-    padding: 10px;
-    background: rgba(0,0,0,.10);
-    margin-top: 10px;
+  .dot{
+    width:10px;height:10px;border-radius:50%;
+    box-shadow:0 0 0 4px rgba(255,255,255,.06);
+    flex:0 0 auto;
   }
 
-  .statusLine{
-    display:flex; align-items:flex-start; gap:10px;
-    font-size: 12px; line-height: 1.35;
-    color: rgba(255,255,255,.82);
+  .content{ padding:12px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
   }
 
-  .statusDot{
-    width:10px; height:10px; border-radius:50%;
-    margin-top: 4px;
-    flex: 0 0 auto;
-    box-shadow: 0 0 0 5px rgba(255,255,255,.06);
+  /* phone = one column so nothing cuts */
+  @media (max-width: 420px){
+    .wrap{ max-width: 420px; }
+    .grid{ grid-template-columns: 1fr; }
   }
-  .goodDot{ background: var(--good); box-shadow: 0 0 0 6px var(--goodSoft); }
-  .badDot{ background: var(--bad); box-shadow: 0 0 0 6px var(--badSoft); }
-  .warnDot{ background: var(--warn); box-shadow: 0 0 0 6px var(--warnSoft); }
 
-  .footer{
+  .card{
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.14);
+    border-radius:16px;
+    padding:12px;
+    min-width:0;
+  }
+
+  .label{
+    font-family:var(--mono);
+    font-size:12px;
+    color:rgba(255,255,255,.70);
+    letter-spacing:.2px;
+    margin-bottom:8px;
+  }
+
+  .input{
+    width:100%;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.20);
+    color:rgba(255,255,255,.92);
+    padding:12px 12px;
+    outline:none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .input::placeholder{ color:rgba(255,255,255,.35); }
+
+  .chips{
     display:flex;
-    justify-content:flex-end;
-    padding-top: 10px;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
   }
 
-  /* Custom Dropdown (animated Apple glass) */
-  .dd{ position: relative; width: 100%; }
-  .ddBtn{
+  .chipBtn{
+    padding:10px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.18);
+    color:rgba(255,255,255,.80);
+    font-family:var(--mono);
+    cursor:pointer;
+    transition:transform 160ms ease, box-shadow 160ms ease;
+  }
+  .chipBtn:active{ transform:scale(.97); }
+
+  /* Apple-glass button */
+  .btn{
+    padding:10px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.22);
+    color:rgba(255,255,255,.86);
+    font-family:var(--mono);
+    cursor:pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* ---- Custom dropdown (animated reveal) ---- */
+  .selectWrap{
+    position:relative;
+  }
+  .selectBtn{
     width:100%;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    padding: 10px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.22);
-    color: rgba(255,255,255,.92);
-    font-family: var(--mono);
-    font-size: 12px;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.22);
+    color:rgba(255,255,255,.92);
     cursor:pointer;
-    transition: background 160ms ease, transform 120ms ease;
-    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
-  .ddBtn:hover{ background: rgba(0,0,0,.26); }
-  .ddBtn:active{ transform: scale(.99); }
-
-  .ddLeft{ display:flex; align-items:center; gap:10px; min-width:0; }
-  .ddDot{ width:9px; height:9px; border-radius:50%; box-shadow: 0 0 0 4px rgba(255,255,255,.08); flex:0 0 auto; }
-  .ddText{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  .ddChevron{
-    width:10px; height:10px;
+  .selectLeft{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .selectText{
+    font-family:var(--mono);
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .chev{
+    width:10px;height:10px;
     border-right:2px solid rgba(255,255,255,.70);
     border-bottom:2px solid rgba(255,255,255,.70);
-    transform: rotate(45deg);
-    transition: transform 180ms ease;
-    flex: 0 0 auto;
+    transform:rotate(45deg);
+    transition:transform 180ms ease;
   }
-  .dd.open .ddChevron{ transform: rotate(-135deg); }
 
-  .ddMenu{
+  .menu{
     position:absolute;
     left:0; right:0;
     top: calc(100% + 8px);
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(10,10,10,.55);
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.35);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     overflow:hidden;
-    z-index: 50;
-
+    transform-origin: top;
+    transform: scaleY(.92);
     opacity:0;
-    transform: translateY(-6px) scale(.985);
     pointer-events:none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 160ms ease, transform 180ms ease;
+    z-index:50;
   }
-  .dd.open .ddMenu{
+  .menu.open{
     opacity:1;
-    transform: translateY(0px) scale(1);
+    transform: scaleY(1);
     pointer-events:auto;
   }
-
-  .ddItem{
+  .menuItem{
+    padding:12px 12px;
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    padding: 10px 10px;
+    gap:10px;
     cursor:pointer;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: rgba(255,255,255,.90);
-    border-bottom: 1px solid rgba(255,255,255,.07);
-    transition: background 140ms ease;
+    border-top:1px solid rgba(255,255,255,.06);
   }
-  .ddItem:last-child{ border-bottom:none; }
-  .ddItem:hover{ background: rgba(255,255,255,.06); }
-  .ddItem small{ color: rgba(255,255,255,.60); font-size: 10px; }
+  .menuItem:first-child{ border-top:none; }
+  .menuItem:hover{ background:rgba(255,255,255,.05); }
 
-  @media (max-width: 520px){
-    .wrap{ max-width: 520px; }
+  /* outputs */
+  .outGrid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+  }
+  @media (max-width: 420px){
+    .outGrid{ grid-template-columns: 1fr; }
+  }
+
+  .out{
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.12);
+    border-radius:16px;
+    padding:12px;
+    min-width:0;
+  }
+  .outTitle{
+    font-family:var(--mono);
+    color:rgba(255,255,255,.70);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .outVal{
+    font-family:var(--mono);
+    font-size:24px;
+    letter-spacing:.3px;
+  }
+
+  .miniChips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+  }
+  .miniChip{
+    padding:10px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.18);
+    color:rgba(255,255,255,.80);
+    font-family:var(--mono);
+    font-size:12px;
+  }
+
+  .status{
+    margin-top:10px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.14);
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--mono);
+    color:rgba(255,255,255,.86);
+  }
+  .statusDot{
+    width:12px;height:12px;border-radius:50%;
+    box-shadow:0 0 0 5px rgba(255,255,255,.06);
+    flex:0 0 auto;
+  }
+
+  .bottomRow{
+    display:flex;
+    justify-content:flex-end;
+    padding:10px 12px 12px;
+    border-top:1px solid rgba(255,255,255,.07);
   }
 </style>
 </head>
@@ -308,456 +317,468 @@
 <body>
 <div class="wrap">
   <div class="panel">
+
     <div class="top">
-      <div class="chip">Lucid Flex — Risk + Size</div>
-    </div>
-
-    <div class="content">
-      <div class="card">
-        <div class="titleRow">
-          <div>
-            <div style="font-weight:800;font-size:13px;letter-spacing:.2px;">Position Size</div>
-            <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);" id="formulaLine">
-              Size = Risk ÷ (Stop × $/Point)
-            </div>
-          </div>
-          <div class="badge">
-            <span class="dot" id="specDot"></span>
-            <span id="specText">MNQ • $2/pt</span>
-          </div>
+      <div class="titleRow">
+        <div>
+          <div class="title">Position Size</div>
+          <div class="formula" id="formulaText"></div>
         </div>
 
-        <div class="row">
-          <div class="field">
-            <div class="fieldTop">
-              <div class="label">SYMBOL</div>
-              <div class="help">glass</div>
-            </div>
-
-            <div class="dd" id="dd">
-              <button class="ddBtn" id="ddBtn" type="button" aria-label="Choose symbol">
-                <div class="ddLeft">
-                  <span class="ddDot" id="ddDot"></span>
-                  <span class="ddText" id="ddText">MNQ</span>
-                </div>
-                <span class="ddChevron"></span>
-              </button>
-
-              <div class="ddMenu" id="ddMenu" role="listbox" aria-label="Symbols">
-                <div class="ddItem" data-val="MNQ"><div>MNQ</div><small>$2/pt</small></div>
-                <div class="ddItem" data-val="MES"><div>MES</div><small>$5/pt</small></div>
-                <div class="ddItem" data-val="MGC"><div>MGC1!</div><small>$10/1.0</small></div>
-                <div class="ddItem" data-val="SI"><div>SI1!</div><small>$5 per 0.01</small></div>
-              </div>
-            </div>
-
-            <input id="symbol" type="hidden" value="MNQ" />
-          </div>
-
-          <div class="field" id="riskField">
-            <div class="fieldTop">
-              <div class="label" id="riskLabel">$ RISK (PER TRADE)</div>
-              <div class="help" id="riskHint">50–120</div>
-            </div>
-            <input id="risk" type="number" inputmode="decimal" min="0" step="1" value="100" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="field">
-            <div class="fieldTop">
-              <div class="label" id="stopLabel">STOP (POINTS)</div>
-              <div class="help" id="stopHint">typical 20–40</div>
-            </div>
-            <input id="stop" type="number" inputmode="decimal" min="0" step="0.25" value="25" />
-            <div class="presetRow" id="stopPresets"></div>
-          </div>
-
-          <div class="field">
-            <div class="fieldTop">
-              <div class="label" id="tpLabel">TP (POINTS)</div>
-              <div class="help" id="tpHint">optional</div>
-            </div>
-            <input id="tp" type="number" inputmode="decimal" min="0" step="0.25" value="80" />
-            <div class="presetRow" id="tpPresets"></div>
-          </div>
-        </div>
-
-        <div class="outputs">
-          <div class="out">
-            <div class="label">CONTRACTS</div>
-            <div class="outVal" id="contracts">0</div>
-          </div>
-          <div class="out">
-            <div class="label">TOTAL RISK ($)</div>
-            <div class="outVal" id="riskOut">$0</div>
-          </div>
-          <div class="out">
-            <div class="label">TP PROFIT ($)</div>
-            <div class="outVal" id="profitOut">$0</div>
-          </div>
-          <div class="out">
-            <div class="label" id="ppLabel">$ / POINT (1 MICRO)</div>
-            <div class="outVal" id="ppOut">$0</div>
-          </div>
-        </div>
-
-        <div class="pillRow" id="recPills"></div>
-
-        <div class="status">
-          <div class="statusLine">
-            <div class="statusDot goodDot" id="statusDot"></div>
-            <div id="statusText">Ready.</div>
-          </div>
-        </div>
-
-        <div class="footer">
-          <button class="btn" id="resetBtn" type="button">Reset Inputs</button>
+        <div class="pill" id="symbolPill">
+          <span class="dot" id="pillDot"></span>
+          <span id="pillText"></span>
         </div>
       </div>
     </div>
+
+    <div class="content">
+
+      <div class="grid">
+
+        <div class="card">
+          <div class="label">SYMBOL</div>
+
+          <div class="selectWrap">
+            <button class="selectBtn" id="selectBtn" type="button">
+              <div class="selectLeft">
+                <span class="dot" id="selectDot"></span>
+                <span class="selectText" id="selectText">MNQ</span>
+              </div>
+              <div class="chev" id="selectChev"></div>
+            </button>
+
+            <div class="menu" id="menu">
+              <div class="menuItem" data-sym="MNQ">
+                <span class="dot" style="background:#28E6A5"></span>
+                <span class="selectText">MNQ • $2/pt</span>
+              </div>
+              <div class="menuItem" data-sym="MES">
+                <span class="dot" style="background:#28E6A5"></span>
+                <span class="selectText">MES • $5/pt</span>
+              </div>
+              <div class="menuItem" data-sym="MGC1">
+                <span class="dot" style="background:#FFD34D"></span>
+                <span class="selectText">MGC1! • $10/1.0</span>
+              </div>
+              <div class="menuItem" data-sym="SI1">
+                <span class="dot" style="background:#FF4D6D"></span>
+                <span class="selectText">SI1! • $5 per 0.01</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="riskCard">
+          <div class="label" id="riskLabel">$ RISK (PER TRADE)</div>
+          <input class="input" id="riskInput" inputmode="decimal" placeholder="e.g. 100" />
+          <div class="chips" id="riskChips">
+            <button class="chipBtn" type="button" data-risk="50">50</button>
+            <button class="chipBtn" type="button" data-risk="80">80</button>
+            <button class="chipBtn" type="button" data-risk="100">100</button>
+            <button class="chipBtn" type="button" data-risk="120">120</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label" id="stopLabel">STOP</div>
+          <input class="input" id="stopInput" inputmode="decimal" placeholder="Enter stop" />
+          <div class="chips" id="stopChips"></div>
+        </div>
+
+        <div class="card">
+          <div class="label" id="tpLabel">TP</div>
+          <input class="input" id="tpInput" inputmode="decimal" placeholder="Enter TP" />
+          <div class="chips" id="tpChips"></div>
+        </div>
+
+      </div>
+
+      <div class="outGrid">
+        <div class="out">
+          <div class="outTitle">CONTRACTS</div>
+          <div class="outVal" id="outContracts">—</div>
+        </div>
+        <div class="out">
+          <div class="outTitle">TOTAL RISK ($)</div>
+          <div class="outVal" id="outRisk">$—</div>
+        </div>
+        <div class="out">
+          <div class="outTitle">TP PROFIT ($)</div>
+          <div class="outVal" id="outProfit">$—</div>
+        </div>
+        <div class="out">
+          <div class="outTitle" id="unitTitle">$ / POINT</div>
+          <div class="outVal" id="outUnit">$—</div>
+        </div>
+      </div>
+
+      <div class="miniChips" id="recChips"></div>
+
+      <div class="status" id="statusBox">
+        <span class="statusDot" id="statusDot" style="background:var(--warn)"></span>
+        <span id="statusText">Enter values to calculate.</span>
+      </div>
+
+    </div>
+
+    <div class="bottomRow">
+      <button class="btn" id="resetBtn" type="button">Reset Inputs</button>
+    </div>
+
   </div>
 </div>
 
 <script>
-  const SPECS = {
+  // =========================
+  // CONFIG
+  // =========================
+  const SYMBOLS = {
     MNQ: {
-      key:"MNQ", label:"MNQ",
-      badge:"MNQ • $2/pt", dot:"rgba(40,230,165,.95)",
-      dollarsPerPoint: 2,
-      stopHint:"typical 20–40", tpHint:"typical 60–100",
-      stopStep: 0.25, tpStep: 0.25,
-      stopPresets:[20,25,30,40],
-      tpPresets:[60,80,100],
-      rec:["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"]
+      name: "MNQ",
+      pill: "MNQ • $2/pt",
+      color: "#28E6A5",
+      mode: "normal",
+      unitTitle: "$ / POINT (1 MICRO)",
+      unitValue: 2,
+      stopChips: [20,25,30,40],
+      tpChips: [60,80,100],
+      rec: ["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"],
+      formula: "Size = Risk ÷ (Stop × $/Point)"
     },
     MES: {
-      key:"MES", label:"MES",
-      badge:"MES • $5/pt", dot:"rgba(40,230,165,.95)",
-      dollarsPerPoint: 5,
-      stopHint:"typical 5–10", tpHint:"typical 10–20",
-      stopStep: 0.25, tpStep: 0.25,
-      stopPresets:[5,8,10],
-      tpPresets:[10,12,20],
-      rec:["Challenge: 1–2", "Funded: 1–4"]
+      name: "MES",
+      pill: "MES • $5/pt",
+      color: "#28E6A5",
+      mode: "normal",
+      unitTitle: "$ / POINT (1 MICRO)",
+      unitValue: 5,
+      stopChips: [5,8,10],
+      tpChips: [10,12,20],
+      rec: ["Challenge: 1–2", "Funded: 1–4"],
+      formula: "Size = Risk ÷ (Stop × $/Point)"
     },
-    MGC: {
-      key:"MGC", label:"MGC1!",
-      badge:"MGC1! • $10/1.0", dot:"rgba(255,211,77,.95)",
-      dollarsPerPoint: 10,
-      stopHint:"typical 1.0–2.5", tpHint:"typical 3.0–6.0",
-      stopStep: 0.1, tpStep: 0.1,
-      stopPresets:[1.0,1.5,2.0,2.5],
-      tpPresets:[3.0,4.0,5.0,6.0],
-      rec:["Challenge: 1–2", "Funded: 1–3"]
+    MGC1: {
+      name: "MGC1!",
+      pill: "MGC1! • $10/1.0",
+      color: "#FFD34D",
+      mode: "normal",
+      unitTitle: "$ / 1.0 (1 MICRO)",
+      unitValue: 10,
+      stopChips: [1,1.5,2,2.5],
+      tpChips: [3,4,5,6],
+      rec: ["Challenge: 1–2", "Funded: 1–3"],
+      formula: "Size = Risk ÷ (Stop × $/Point)"
     },
-    SI: {
-      key:"SI", label:"SI1!",
-      badge:"SI1! • $5 per 0.01", dot:"rgba(255,77,109,.95)",
-      stopHint:"must be 0.02–0.05", tpHint:"typical 0.06–0.12",
-      stopStep: 0.001, tpStep: 0.001,
-      stopPresets:[0.02,0.03,0.04,0.05],
-      tpPresets:[0.06,0.10,0.12],
-      rec:["Challenge: avoid", "Funded: 1 micro ONLY", "Daily silver loss: $50 max"]
+    SI1: {
+      name: "SI1!",
+      pill: "SI1! • $5 per 0.01",
+      color: "#FF4D6D",
+      mode: "silver",
+      // micro silver: $5 per 0.01
+      per001: 5,
+      step: 0.01,
+      unitTitle: "$ PER 0.01 (1 MICRO)",
+      stopChips: [0.02,0.03,0.04,0.05],
+      tpChips: [0.06,0.10,0.12],
+      rec: ["Challenge: avoid", "Funded: 1 micro ONLY", "Daily silver loss: $50 max"],
+      formula: "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1"
     }
   };
 
-  const RULES = { riskMin:50, riskMax:120, maxMicrosTotal:40, siMaxRisk:50 };
+  const TZ = "America/Toronto"; // (for your journal context, not needed for math)
 
-  const symbolEl = document.getElementById("symbol");
-  const riskEl = document.getElementById("risk");
-  const stopEl = document.getElementById("stop");
-  const tpEl = document.getElementById("tp");
+  // =========================
+  // ELEMENTS
+  // =========================
+  const formulaText = document.getElementById("formulaText");
 
-  const contractsEl = document.getElementById("contracts");
-  const riskOutEl = document.getElementById("riskOut");
-  const profitOutEl = document.getElementById("profitOut");
-  const ppOutEl = document.getElementById("ppOut");
+  const pillDot = document.getElementById("pillDot");
+  const pillText = document.getElementById("pillText");
 
-  const specText = document.getElementById("specText");
-  const specDot = document.getElementById("specDot");
+  const selectBtn = document.getElementById("selectBtn");
+  const selectDot = document.getElementById("selectDot");
+  const selectText = document.getElementById("selectText");
+  const selectChev = document.getElementById("selectChev");
+  const menu = document.getElementById("menu");
 
-  const stopHint = document.getElementById("stopHint");
-  const tpHint = document.getElementById("tpHint");
-  const recPills = document.getElementById("recPills");
+  const riskCard = document.getElementById("riskCard");
+  const riskLabel = document.getElementById("riskLabel");
+  const riskInput = document.getElementById("riskInput");
+  const riskChips = document.getElementById("riskChips");
 
+  const stopLabel = document.getElementById("stopLabel");
+  const stopInput = document.getElementById("stopInput");
+  const stopChips = document.getElementById("stopChips");
+
+  const tpLabel = document.getElementById("tpLabel");
+  const tpInput = document.getElementById("tpInput");
+  const tpChips = document.getElementById("tpChips");
+
+  const outContracts = document.getElementById("outContracts");
+  const outRisk = document.getElementById("outRisk");
+  const outProfit = document.getElementById("outProfit");
+  const outUnit = document.getElementById("outUnit");
+  const unitTitle = document.getElementById("unitTitle");
+
+  const recChips = document.getElementById("recChips");
+
+  const statusBox = document.getElementById("statusBox");
   const statusDot = document.getElementById("statusDot");
   const statusText = document.getElementById("statusText");
 
-  const stopPresets = document.getElementById("stopPresets");
-  const tpPresets = document.getElementById("tpPresets");
-
-  const stopLabel = document.getElementById("stopLabel");
-  const tpLabel = document.getElementById("tpLabel");
-  const ppLabel = document.getElementById("ppLabel");
-  const formulaLine = document.getElementById("formulaLine");
-  const riskHint = document.getElementById("riskHint");
-  const riskLabel = document.getElementById("riskLabel");
-
   const resetBtn = document.getElementById("resetBtn");
 
-  // Dropdown
-  const dd = document.getElementById("dd");
-  const ddBtn = document.getElementById("ddBtn");
-  const ddMenu = document.getElementById("ddMenu");
-  const ddText = document.getElementById("ddText");
-  const ddDot = document.getElementById("ddDot");
+  // =========================
+  // STATE
+  // =========================
+  let current = "MNQ";
 
-  // Persistence
-  const LS_KEY = "lucid_calc_compact_v1";
-
-  function loadState(){
-    try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; }
-    catch{ return null; }
-  }
-  function saveState(){
-    const data = {
-      symbol: symbolEl.value,
-      risk: riskEl.value,
-      stop: stopEl.value,
-      tp: tpEl.value,
-      dayStamp: new Date().toISOString().slice(0,10)
-    };
-    localStorage.setItem(LS_KEY, JSON.stringify(data));
-  }
-  function restoreState(){
-    const s = loadState();
-    if(!s) return;
-    setSymbol(s.symbol ?? "MNQ", false);
-    riskEl.value = s.risk ?? defaultRisk(symbolEl.value);
-    stopEl.value = s.stop ?? defaultStop(symbolEl.value);
-    tpEl.value = s.tp ?? defaultTP(symbolEl.value);
+  // =========================
+  // HELPERS
+  // =========================
+  function toNum(v){
+    if(v === "" || v == null) return NaN;
+    const n = Number(String(v).replace(/,/g,"").trim());
+    return Number.isFinite(n) ? n : NaN;
   }
 
-  function num(v){
-    const x = Number(v);
-    return Number.isFinite(x) ? x : 0;
-  }
-  function money0(n){
-    const sign = n < 0 ? "-" : "";
-    return sign + "$" + Math.abs(n).toFixed(0);
+  function money(n){
+    if(!Number.isFinite(n)) return "—";
+    const fixed = Math.round(n * 100) / 100;
+    return fixed.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
-  function setStatus(kind, text){
-    statusText.textContent = text;
-    if(kind === "good"){ statusDot.className = "statusDot goodDot"; }
-    else if(kind === "warn"){ statusDot.className = "statusDot warnDot"; }
-    else { statusDot.className = "statusDot badDot"; }
+  function setStatus(type, msg){
+    if(type === "good"){ statusDot.style.background = "var(--good)"; }
+    else if(type === "bad"){ statusDot.style.background = "var(--bad)"; }
+    else { statusDot.style.background = "var(--warn)"; }
+    statusText.textContent = msg;
   }
 
-  function defaultStop(sym){
-    if(sym==="MES") return "8";
-    if(sym==="MGC") return "2.0";
-    if(sym==="SI")  return "0.04";
-    return "25";
-  }
-  function defaultTP(sym){
-    if(sym==="MES") return "12";
-    if(sym==="MGC") return "5.0";
-    if(sym==="SI")  return "0.12";
-    return "80";
-  }
-  function defaultRisk(sym){
-    return (sym==="SI") ? "50" : "100";
+  function clearChips(el){ el.innerHTML = ""; }
+  function addChip(el, label, onClick){
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chipBtn";
+    b.textContent = label;
+    b.addEventListener("click", onClick);
+    el.appendChild(b);
   }
 
-  // Dropdown controls
-  function openDD(){ dd.classList.add("open"); }
-  function closeDD(){ dd.classList.remove("open"); }
-
-  ddBtn.addEventListener("click", ()=>{
-    dd.classList.contains("open") ? closeDD() : openDD();
-  });
-  document.addEventListener("click", (e)=>{
-    if(!dd.contains(e.target)) closeDD();
-  });
-  ddMenu.querySelectorAll(".ddItem").forEach(item=>{
-    item.addEventListener("click", ()=>{
-      const val = item.getAttribute("data-val");
-      setSymbol(val, true);
-      closeDD();
-    });
-  });
-
-  function renderPresets(sp){
-    stopPresets.innerHTML = "";
-    tpPresets.innerHTML = "";
-
-    sp.stopPresets.forEach(v=>{
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "pillBtn";
-      b.textContent = String(v);
-      b.addEventListener("click", ()=>{
-        stopEl.value = String(v);
-        updateAll();
-      });
-      stopPresets.appendChild(b);
-    });
-
-    sp.tpPresets.forEach(v=>{
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "pillBtn";
-      b.textContent = String(v);
-      b.addEventListener("click", ()=>{
-        tpEl.value = String(v);
-        updateAll();
-      });
-      tpPresets.appendChild(b);
-    });
-
-    recPills.innerHTML = "";
-    sp.rec.forEach(t=>{
-      const p = document.createElement("div");
-      p.className = "pill";
-      p.textContent = t;
-      recPills.appendChild(p);
-    });
+  function closeMenu(){
+    menu.classList.remove("open");
+    selectChev.style.transform = "rotate(45deg)";
   }
 
-  function setSymbol(sym, resetInputs){
-    if(!SPECS[sym]) sym = "MNQ";
-    symbolEl.value = sym;
+  // =========================
+  // UI UPDATE
+  // =========================
+  function applySymbol(sym){
+    current = sym;
+    const S = SYMBOLS[current];
 
-    const sp = SPECS[sym];
+    // pill
+    pillDot.style.background = S.color;
+    selectDot.style.background = S.color;
+    pillText.textContent = S.pill;
+    selectText.textContent = S.name;
 
-    ddText.textContent = sp.label;
-    ddDot.style.background = sp.dot;
+    // formula
+    formulaText.textContent = S.formula;
 
-    specText.textContent = sp.badge;
-    specDot.style.background = sp.dot;
+    // unit title/value
+    unitTitle.textContent = S.unitTitle;
+    if(S.mode === "silver"){
+      outUnit.textContent = `$${money(S.per001)}`;
+    }else{
+      outUnit.textContent = `$${money(S.unitValue)}`;
+    }
 
-    stopHint.textContent = sp.stopHint;
-    tpHint.textContent = sp.tpHint;
+    // risk behavior
+    if(S.mode === "silver"){
+      // disable risk input (silver uses stop to compute risk)
+      riskCard.style.opacity = "0.55";
+      riskInput.disabled = true;
+      riskInput.value = "";
+      riskLabel.textContent = "RISK (AUTO FROM STOP)";
+      riskChips.style.display = "none";
 
-    stopEl.step = String(sp.stopStep);
-    tpEl.step = String(sp.tpStep);
-
-    if(sym === "SI"){
       stopLabel.textContent = "STOP (DISTANCE)";
       tpLabel.textContent = "TP (DISTANCE)";
-      ppLabel.textContent = "$ PER 0.01 (1 MICRO)";
-      formulaLine.textContent = "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1";
-      riskLabel.textContent = "RISK (INFO)";
-      riskHint.textContent = "auto from stop";
-      riskEl.disabled = true;
-      riskEl.style.opacity = ".55";
+      stopInput.placeholder = "e.g. 0.04";
+      tpInput.placeholder = "e.g. 0.12";
     }else{
-      stopLabel.textContent = "STOP (POINTS)";
-      tpLabel.textContent = "TP (POINTS)";
-      ppLabel.textContent = "$ / POINT (1 MICRO)";
-      formulaLine.textContent = "Size = Risk ÷ (Stop × $/Point)";
+      riskCard.style.opacity = "1";
+      riskInput.disabled = false;
       riskLabel.textContent = "$ RISK (PER TRADE)";
-      riskHint.textContent = "50–120";
-      riskEl.disabled = false;
-      riskEl.style.opacity = "1";
+      riskChips.style.display = "flex";
+
+      stopLabel.textContent = "STOP";
+      tpLabel.textContent = "TP";
+      stopInput.placeholder = "Enter stop";
+      tpInput.placeholder = "Enter TP";
     }
 
-    renderPresets(sp);
+    // chips
+    clearChips(stopChips);
+    clearChips(tpChips);
 
-    if(resetInputs){
-      riskEl.value = defaultRisk(sym);
-      stopEl.value = defaultStop(sym);
-      tpEl.value = defaultTP(sym);
-    }
+    S.stopChips.forEach(v=>{
+      addChip(stopChips, String(v), () => { stopInput.value = String(v); calc(); });
+    });
+    S.tpChips.forEach(v=>{
+      addChip(tpChips, String(v), () => { tpInput.value = String(v); calc(); });
+    });
 
-    updateAll();
+    // recommendations
+    recChips.innerHTML = "";
+    S.rec.forEach(t=>{
+      const d = document.createElement("div");
+      d.className = "miniChip";
+      d.textContent = t;
+      recChips.appendChild(d);
+    });
+
+    // clean outputs
+    outContracts.textContent = "—";
+    outRisk.textContent = "$—";
+    outProfit.textContent = "$—";
+
+    setStatus("warn","Enter values to calculate.");
+    closeMenu();
+    calc();
   }
 
+  // =========================
+  // CALCULATION
+  // =========================
   function calc(){
-    const sym = symbolEl.value;
-    const sp = SPECS[sym];
+    const S = SYMBOLS[current];
+    const stop = toNum(stopInput.value);
+    const tp = toNum(tpInput.value);
 
-    const stop = num(stopEl.value);
-    const tp = num(tpEl.value);
+    // For normal symbols
+    if(S.mode !== "silver"){
+      const risk = toNum(riskInput.value);
 
-    if(stop <= 0){
-      contractsEl.textContent = "0";
-      riskOutEl.textContent = "$0";
-      profitOutEl.textContent = "$0";
-      ppOutEl.textContent = "$0";
-      setStatus("warn","Enter a valid stop.");
-      return;
-    }
+      if(!Number.isFinite(risk) || !Number.isFinite(stop) || stop <= 0){
+        outContracts.textContent = "—";
+        outRisk.textContent = "$—";
+        outProfit.textContent = "$—";
+        setStatus("warn","Enter Risk + Stop (and TP if you want profit).");
+        return;
+      }
 
-    // SI: fixed 1 micro, risk controlled by stop distance
-    if(sym === "SI"){
-      const dollarsPer001 = 5;
+      const perPoint = S.unitValue;
+      let contracts = Math.floor(risk / (stop * perPoint));
+      if(!Number.isFinite(contracts) || contracts < 0) contracts = 0;
 
-      const dollarRisk = (stop / 0.01) * dollarsPer001;
-      const profit = (tp > 0) ? (tp / 0.01) * dollarsPer001 : 0;
+      // cap by Lucid max 40 micros (you’re using micros)
+      if(contracts > 40) contracts = 40;
 
-      contractsEl.textContent = "1";
-      ppOutEl.textContent = "$5";
-      riskOutEl.textContent = money0(dollarRisk);
-      profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
+      const totalRisk = contracts * stop * perPoint;
+      const profit = (Number.isFinite(tp) && tp > 0) ? (tp * perPoint * contracts) : 0;
 
-      const warnings = [];
-      if(stop < 0.02) warnings.push("Stop too tight (< 0.02).");
-      if(stop > 0.05) warnings.push("Stop too wide (> 0.05). No trade.");
-      if(dollarRisk > RULES.siMaxRisk) warnings.push("Risk > $50 on Silver. No trade.");
-      if(tp > 0 && tp < 0.06) warnings.push("TP too small (< 0.06).");
-      if(tp > 0 && tp > 0.12) warnings.push("TP unusually large (> 0.12).");
+      outContracts.textContent = String(contracts);
+      outRisk.textContent = `$${money(totalRisk)}`;
+      outProfit.textContent = `$${money(profit)}`;
 
-      if(warnings.length === 0){
-        setStatus("good","SI1! OK: 1 micro fixed. Risk controlled by stop distance.");
+      // status rules
+      if(contracts === 0){
+        setStatus("bad","Size is 0. Increase risk or reduce stop.");
+        return;
+      }
+
+      // warn if risk outside your rule (50–120)
+      if(risk < 50 || risk > 120){
+        setStatus("warn","Risk should be 50–120.");
       }else{
-        setStatus(warnings.some(x=>x.includes("No trade")) ? "bad" : "warn", warnings.join(" "));
+        setStatus("good","Sizing OK. Stop decides size.");
       }
 
       return;
     }
 
-    // Normal symbols
-    const pp = sp.dollarsPerPoint;
-    const risk = num(riskEl.value);
+    // SILVER (SI1!) — fixed 1 micro
+    // Risk = (Stop ÷ 0.01) × $5
+    // Profit = (TP ÷ 0.01) × $5
+    const contracts = 1;
+    const per001 = S.per001;
+    const step = S.step;
 
-    const raw = risk / (stop * pp);
-    let contracts = Math.floor(raw);
-    if(contracts < 0) contracts = 0;
-    if(contracts > RULES.maxMicrosTotal) contracts = RULES.maxMicrosTotal;
+    if(!Number.isFinite(stop) || stop <= 0){
+      outContracts.textContent = "1";
+      outRisk.textContent = "$—";
+      outProfit.textContent = "$—";
+      setStatus("warn","Enter Stop distance (0.02–0.05).");
+      return;
+    }
 
-    const totalRisk = contracts * stop * pp;
-    const profit = (tp > 0) ? (tp * pp * contracts) : 0;
+    const totalRisk = (stop / step) * per001;
+    const profit = (Number.isFinite(tp) && tp > 0) ? (tp / step) * per001 : 0;
 
-    contractsEl.textContent = String(contracts);
-    ppOutEl.textContent = money0(pp);
-    riskOutEl.textContent = money0(totalRisk);
-    profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
+    outContracts.textContent = "1";
+    outRisk.textContent = `$${money(totalRisk)}`;
+    outProfit.textContent = `$${money(profit)}`;
 
-    const warnings = [];
-    if(risk < RULES.riskMin || risk > RULES.riskMax) warnings.push(`Risk should be ${RULES.riskMin}–${RULES.riskMax}.`);
-    if(contracts === 0) warnings.push("Risk too low for this stop.");
-    if(raw > RULES.maxMicrosTotal) warnings.push("Clamped to 40 micros max.");
+    // enforce your SI rules
+    if(stop < 0.02 || stop > 0.05){
+      setStatus("bad","Stop must be 0.02–0.05 (otherwise no trade).");
+      return;
+    }
+    if(totalRisk > 50){
+      setStatus("bad","Silver risk must be ≤ $50 (1 micro). Tighten stop.");
+      return;
+    }
 
-    if(warnings.length === 0) setStatus("good","Sizing OK. Stop decides size.");
-    else setStatus("warn", warnings.join(" "));
+    setStatus("good","Silver OK. 1 micro only. Risk controlled by stop.");
   }
 
-  function updateAll(){
+  // =========================
+  // EVENTS
+  // =========================
+  // dropdown open/close
+  selectBtn.addEventListener("click", () => {
+    const open = menu.classList.toggle("open");
+    selectChev.style.transform = open ? "rotate(-135deg)" : "rotate(45deg)";
+  });
+
+  // click outside to close
+  document.addEventListener("click", (e) => {
+    if(!e.target.closest(".selectWrap")) closeMenu();
+  });
+
+  // select item
+  menu.querySelectorAll(".menuItem").forEach(item=>{
+    item.addEventListener("click", () => applySymbol(item.dataset.sym));
+  });
+
+  // risk chips
+  riskChips.querySelectorAll("[data-risk]").forEach(b=>{
+    b.addEventListener("click", () => {
+      if(riskInput.disabled) return;
+      riskInput.value = b.dataset.risk;
+      calc();
+    });
+  });
+
+  // inputs
+  [riskInput, stopInput, tpInput].forEach(inp=>{
+    inp.addEventListener("input", calc);
+  });
+
+  // reset
+  resetBtn.addEventListener("click", () => {
+    riskInput.value = "";
+    stopInput.value = "";
+    tpInput.value = "";
     calc();
-    saveState();
-  }
-
-  // Events
-  [riskEl, stopEl, tpEl].forEach(el=>{
-    el.addEventListener("input", updateAll);
-    el.addEventListener("change", updateAll);
   });
 
-  resetBtn.addEventListener("click", ()=>{
-    const sym = symbolEl.value;
-    if(sym !== "SI") riskEl.value = defaultRisk(sym);
-    stopEl.value = defaultStop(sym);
-    tpEl.value = defaultTP(sym);
-    updateAll();
-  });
-
-  // Init
-  setSymbol("MNQ", false);
-  restoreState();
-  updateAll();
+  // init
+  applySymbol("MNQ");
 </script>
+
 </body>
 </html>
