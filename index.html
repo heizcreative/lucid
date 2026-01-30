@@ -169,9 +169,7 @@
   }
 
   /* ---- Custom dropdown (animated reveal) ---- */
-  .selectWrap{
-    position:relative;
-  }
+  .selectWrap{ position:relative; }
   .selectBtn{
     width:100%;
     display:flex;
@@ -311,6 +309,72 @@
     padding:10px 12px 12px;
     border-top:1px solid rgba(255,255,255,.07);
   }
+
+  /* ===== Apple-glass toggle (SI1 only) ===== */
+  .toggleRow{
+    display:none; /* shown only for SI1 */
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.14);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .toggleText{
+    font-family:var(--mono);
+    font-size:12px;
+    color:rgba(255,255,255,.80);
+    white-space:nowrap;
+  }
+  .switch{
+    position:relative;
+    width:72px;
+    height:40px;
+    flex:0 0 auto;
+  }
+  .switch input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+    margin:0;
+  }
+  .track{
+    position:absolute;
+    inset:0;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.08);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.06),
+      0 12px 30px rgba(0,0,0,.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: background 200ms ease, border-color 200ms ease;
+  }
+  .knob{
+    position:absolute;
+    top:6px; left:6px;
+    width:28px; height:28px;
+    border-radius:999px;
+    background:rgba(255,255,255,.70);
+    box-shadow:
+      0 10px 18px rgba(0,0,0,.35),
+      inset 0 0 0 1px rgba(255,255,255,.35);
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    filter:saturate(1.05);
+  }
+  .switch input:checked ~ .track{
+    background:rgba(120,180,255,.20);
+    border-color:rgba(255,255,255,.22);
+  }
+  .switch input:checked ~ .knob{
+    transform: translateX(32px);
+  }
 </style>
 </head>
 
@@ -363,7 +427,7 @@
               </div>
               <div class="menuItem" data-sym="SI1">
                 <span class="dot" style="background:#FF4D6D"></span>
-                <span class="selectText">SI1! • $5 per 0.01</span>
+                <span class="selectText">SI1! • $5 per 0.01 (micro)</span>
               </div>
             </div>
           </div>
@@ -371,6 +435,17 @@
 
         <div class="card" id="riskCard">
           <div class="label" id="riskLabel">$ RISK (PER TRADE)</div>
+
+          <!-- SI1 toggle only -->
+          <div class="toggleRow" id="silverToggleRow">
+            <div class="toggleText" id="silverToggleText">STOP ➜ AUTO RISK</div>
+            <label class="switch" aria-label="Silver mode toggle">
+              <input type="checkbox" id="silverModeToggle" />
+              <span class="track"></span>
+              <span class="knob"></span>
+            </label>
+          </div>
+
           <input class="input" id="riskInput" inputmode="decimal" placeholder="e.g. 100" />
           <div class="chips" id="riskChips">
             <button class="chipBtn" type="button" data-risk="50">50</button>
@@ -443,7 +518,7 @@
       unitValue: 2,
       stopChips: [20,25,30,40],
       tpChips: [60,80,100],
-      rec: ["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"],
+      rec: [],
       formula: "Size = Risk ÷ (Stop × $/Point)"
     },
     MES: {
@@ -455,7 +530,7 @@
       unitValue: 5,
       stopChips: [5,8,10],
       tpChips: [10,12,20],
-      rec: ["Challenge: 1–2", "Funded: 1–4"],
+      rec: [],
       formula: "Size = Risk ÷ (Stop × $/Point)"
     },
     MGC1: {
@@ -467,26 +542,25 @@
       unitValue: 10,
       stopChips: [1,1.5,2,2.5],
       tpChips: [3,4,5,6],
-      rec: ["Challenge: 1–2", "Funded: 1–3"],
+      rec: [],
       formula: "Size = Risk ÷ (Stop × $/Point)"
     },
     SI1: {
       name: "SI1!",
-      pill: "SI1! • $5 per 0.01",
+      // keep the math you already validated with screenshots:
+      // micro silver journaling: $5 per 0.01 move (1 micro)
+      pill: "SI1! • micro $5 / 0.01",
       color: "#FF4D6D",
       mode: "silver",
-      // micro silver: $5 per 0.01
       per001: 5,
       step: 0.01,
       unitTitle: "$ PER 0.01 (1 MICRO)",
-      stopChips: [0.02,0.03,0.04,0.05],
-      tpChips: [0.06,0.10,0.12],
-      rec: ["Challenge: avoid", "Funded: 1 micro ONLY", "Daily silver loss: $50 max"],
-      formula: "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1"
+      stopChips: [0.02,0.03,0.04,0.05,0.10,0.20,0.63],
+      tpChips: [0.06,0.10,0.12,0.50,1.00,2.02],
+      rec: [],
+      formula: "Micro Silver: Risk = (Stop ÷ 0.01) × $5 • Profit = (TP ÷ 0.01) × $5"
     }
   };
-
-  const TZ = "America/Toronto"; // (for your journal context, not needed for math)
 
   // =========================
   // ELEMENTS
@@ -507,6 +581,10 @@
   const riskInput = document.getElementById("riskInput");
   const riskChips = document.getElementById("riskChips");
 
+  const silverToggleRow = document.getElementById("silverToggleRow");
+  const silverModeToggle = document.getElementById("silverModeToggle");
+  const silverToggleText = document.getElementById("silverToggleText");
+
   const stopLabel = document.getElementById("stopLabel");
   const stopInput = document.getElementById("stopInput");
   const stopChips = document.getElementById("stopChips");
@@ -523,7 +601,6 @@
 
   const recChips = document.getElementById("recChips");
 
-  const statusBox = document.getElementById("statusBox");
   const statusDot = document.getElementById("statusDot");
   const statusText = document.getElementById("statusText");
 
@@ -549,11 +626,41 @@
     return fixed.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
-  function setStatus(type, msg){
+  function setStatusDot(type){
     if(type === "good"){ statusDot.style.background = "var(--good)"; }
     else if(type === "bad"){ statusDot.style.background = "var(--bad)"; }
     else { statusDot.style.background = "var(--warn)"; }
-    statusText.textContent = msg;
+  }
+
+  function setRiskTierStatus(riskVal){
+    // Required tiers:
+    // 50–500 => green
+    // 500–1500 => yellow
+    // >1500 => red
+    if(!Number.isFinite(riskVal)){
+      setStatusDot("warn");
+      statusText.textContent = "Enter values to calculate.";
+      return;
+    }
+
+    if(riskVal >= 50 && riskVal <= 500){
+      setStatusDot("good");
+      statusText.textContent = "Risk OK (50–500).";
+      return;
+    }
+    if(riskVal > 500 && riskVal <= 1500){
+      setStatusDot("warn");
+      statusText.textContent = "High risk (500–1500).";
+      return;
+    }
+    if(riskVal > 1500){
+      setStatusDot("bad");
+      statusText.textContent = "Too much risk (1500+).";
+      return;
+    }
+
+    setStatusDot("warn");
+    statusText.textContent = "Risk is under $50.";
   }
 
   function clearChips(el){ el.innerHTML = ""; }
@@ -578,6 +685,11 @@
     current = sym;
     const S = SYMBOLS[current];
 
+    // IMPORTANT: reset inputs when changing symbol
+    riskInput.value = "";
+    stopInput.value = "";
+    tpInput.value = "";
+
     // pill
     pillDot.style.background = S.color;
     selectDot.style.background = S.color;
@@ -595,20 +707,26 @@
       outUnit.textContent = `$${money(S.unitValue)}`;
     }
 
-    // risk behavior
+    // risk behavior + SI toggle
     if(S.mode === "silver"){
-      // disable risk input (silver uses stop to compute risk)
-      riskCard.style.opacity = "0.55";
-      riskInput.disabled = true;
-      riskInput.value = "";
-      riskLabel.textContent = "RISK (AUTO FROM STOP)";
-      riskChips.style.display = "none";
+      silverToggleRow.style.display = "flex";
+      // default toggle OFF = stop -> auto risk (matches the left position)
+      silverModeToggle.checked = false;
+      silverToggleText.textContent = "STOP ➜ AUTO RISK";
+
+      riskCard.style.opacity = "1";
+      riskChips.style.display = "none"; // chips not needed for SI
+
+      riskLabel.textContent = "$ RISK";
+      riskInput.disabled = true; // in STOP mode we auto-fill risk
 
       stopLabel.textContent = "STOP (DISTANCE)";
       tpLabel.textContent = "TP (DISTANCE)";
-      stopInput.placeholder = "e.g. 0.04";
-      tpInput.placeholder = "e.g. 0.12";
+      stopInput.placeholder = "e.g. 0.63";
+      tpInput.placeholder = "e.g. 2.02";
     }else{
+      silverToggleRow.style.display = "none";
+
       riskCard.style.opacity = "1";
       riskInput.disabled = false;
       riskLabel.textContent = "$ RISK (PER TRADE)";
@@ -631,21 +749,16 @@
       addChip(tpChips, String(v), () => { tpInput.value = String(v); calc(); });
     });
 
-    // recommendations
+    // recommendations (removed)
     recChips.innerHTML = "";
-    S.rec.forEach(t=>{
-      const d = document.createElement("div");
-      d.className = "miniChip";
-      d.textContent = t;
-      recChips.appendChild(d);
-    });
 
     // clean outputs
     outContracts.textContent = "—";
     outRisk.textContent = "$—";
     outProfit.textContent = "$—";
 
-    setStatus("warn","Enter values to calculate.");
+    setStatusDot("warn");
+    statusText.textContent = "Enter values to calculate.";
     closeMenu();
     calc();
   }
@@ -666,7 +779,8 @@
         outContracts.textContent = "—";
         outRisk.textContent = "$—";
         outProfit.textContent = "$—";
-        setStatus("warn","Enter Risk + Stop (and TP if you want profit).");
+        setStatusDot("warn");
+        statusText.textContent = "Enter Risk + Stop (and TP if you want profit).";
         return;
       }
 
@@ -684,55 +798,86 @@
       outRisk.textContent = `$${money(totalRisk)}`;
       outProfit.textContent = `$${money(profit)}`;
 
-      // status rules
       if(contracts === 0){
-        setStatus("bad","Size is 0. Increase risk or reduce stop.");
+        setStatusDot("bad");
+        statusText.textContent = "Size is 0. Increase risk or reduce stop.";
         return;
       }
 
-      // warn if risk outside your rule (50–120)
-      if(risk < 50 || risk > 120){
-        setStatus("warn","Risk should be 50–120.");
-      }else{
-        setStatus("good","Sizing OK. Stop decides size.");
-      }
-
+      // NEW risk tiers (50–500 green, 500–1500 yellow, 1500+ red)
+      setRiskTierStatus(risk);
       return;
     }
 
-    // SILVER (SI1!) — fixed 1 micro
-    // Risk = (Stop ÷ 0.01) × $5
-    // Profit = (TP ÷ 0.01) × $5
+    // =========================
+    // SILVER (SI1!) — micro silver math
+    // STOP mode (toggle OFF): user enters stop/tp, risk auto.
+    // RISK mode (toggle ON): user enters risk, stop auto (tp stays manual).
+    // =========================
     const contracts = 1;
-    const per001 = S.per001;
-    const step = S.step;
+    const per001 = S.per001; // $5 per 0.01
+    const step = S.step;     // 0.01
+
+    const riskMode = !!silverModeToggle.checked;
+
+    if(riskMode){
+      silverToggleText.textContent = "RISK ➜ AUTO STOP";
+      riskInput.disabled = false;
+      riskLabel.textContent = "$ RISK (ENTER)";
+
+      const desiredRisk = toNum(riskInput.value);
+      if(!Number.isFinite(desiredRisk) || desiredRisk <= 0){
+        outContracts.textContent = "1";
+        outRisk.textContent = "$—";
+        outProfit.textContent = "$—";
+        setStatusDot("warn");
+        statusText.textContent = "Enter Risk, then Stop auto-fills.";
+        return;
+      }
+
+      // Stop distance derived from risk:
+      // risk = (stop / 0.01) * $5  => stop = (risk / 5) * 0.01
+      const derivedStop = (desiredRisk / per001) * step;
+
+      // Fill stop input (do not mess with TP)
+      stopInput.value = (Math.round(derivedStop * 1000) / 1000).toString();
+
+      const totalRisk = desiredRisk; // in risk mode, this is the intended risk
+      const profit = (Number.isFinite(tp) && tp > 0) ? (tp / step) * per001 : 0;
+
+      outContracts.textContent = "1";
+      outRisk.textContent = `$${money(totalRisk)}`;
+      outProfit.textContent = `$${money(profit)}`;
+
+      setRiskTierStatus(totalRisk);
+      return;
+    }
+
+    // STOP mode
+    silverToggleText.textContent = "STOP ➜ AUTO RISK";
+    riskInput.disabled = true;
+    riskLabel.textContent = "$ RISK (AUTO)";
 
     if(!Number.isFinite(stop) || stop <= 0){
       outContracts.textContent = "1";
       outRisk.textContent = "$—";
       outProfit.textContent = "$—";
-      setStatus("warn","Enter Stop distance (0.02–0.05).");
+      setStatusDot("warn");
+      statusText.textContent = "Enter Stop (and TP if you want profit).";
       return;
     }
 
     const totalRisk = (stop / step) * per001;
     const profit = (Number.isFinite(tp) && tp > 0) ? (tp / step) * per001 : 0;
 
+    // show auto risk inside the risk box
+    riskInput.value = money(totalRisk);
+
     outContracts.textContent = "1";
     outRisk.textContent = `$${money(totalRisk)}`;
     outProfit.textContent = `$${money(profit)}`;
 
-    // enforce your SI rules
-    if(stop < 0.02 || stop > 0.05){
-      setStatus("bad","Stop must be 0.02–0.05 (otherwise no trade).");
-      return;
-    }
-    if(totalRisk > 50){
-      setStatus("bad","Silver risk must be ≤ $50 (1 micro). Tighten stop.");
-      return;
-    }
-
-    setStatus("good","Silver OK. 1 micro only. Risk controlled by stop.");
+    setRiskTierStatus(totalRisk);
   }
 
   // =========================
@@ -768,11 +913,26 @@
     inp.addEventListener("input", calc);
   });
 
+  // SI1 toggle
+  silverModeToggle.addEventListener("change", () => {
+    // clear fields when switching mode so it feels clean
+    riskInput.value = "";
+    stopInput.value = "";
+    tpInput.value = "";
+    calc();
+  });
+
   // reset
   resetBtn.addEventListener("click", () => {
     riskInput.value = "";
     stopInput.value = "";
     tpInput.value = "";
+    // reset SI toggle if on SI
+    if(SYMBOLS[current].mode === "silver"){
+      silverModeToggle.checked = false;
+      silverToggleText.textContent = "STOP ➜ AUTO RISK";
+      riskInput.disabled = true;
+    }
     calc();
   });
 
