@@ -4,10 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Lucid Flex Risk + Size Calculator</title>
+
 <style>
   :root{
     --bg: #191919;
-    --panel: rgba(255,255,255,.04);
+    --panel: rgba(255,255,255,.035);
     --stroke: rgba(255,255,255,.10);
     --stroke2: rgba(255,255,255,.08);
     --text: rgba(255,255,255,.92);
@@ -31,14 +32,14 @@
   html,body{ height:100%; margin:0; background: var(--bg); }
   body{ font-family: var(--sans); color: var(--text); padding: 10px; }
 
-  .wrap{ width:100%; max-width: 860px; margin: 0 auto; }
+  .wrap{ width:100%; max-width: 900px; margin: 0 auto; }
 
   .panel{
     background: var(--panel);
     border: 1px solid var(--stroke2);
     border-radius: var(--radius);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     overflow: hidden;
   }
 
@@ -96,6 +97,7 @@
     font-family: var(--mono);
     font-size: 11px;
     color: rgba(255,255,255,.86);
+    white-space: nowrap;
   }
   .dot{ width:8px; height:8px; border-radius:50%; box-shadow: 0 0 0 4px rgba(255,255,255,.08); }
 
@@ -125,7 +127,7 @@
     white-space: nowrap;
   }
 
-  input, select{
+  input{
     width:100%;
     padding: 10px 10px;
     border-radius: 12px;
@@ -135,6 +137,35 @@
     outline: none;
     font-family: var(--mono);
     font-size: 12px;
+  }
+
+  /* ===== Apple glass buttons ===== */
+  .btn, .pillBtn{
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.18);
+    color: rgba(255,255,255,.82);
+    cursor:pointer;
+    transition: transform 120ms ease, background 160ms ease, border-color 160ms ease;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover, .pillBtn:hover{ background: rgba(0,0,0,.22); }
+  .btn:active, .pillBtn:active{ transform: scale(.98); }
+
+  /* preset rows */
+  .presetRow{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-top: 8px;
+  }
+  .pillBtn{
+    padding: 6px 10px;
+    font-size: 10px;
+    border-radius: 999px;
+    min-height: 28px;
   }
 
   .outputs{
@@ -195,8 +226,6 @@
     flex: 0 0 auto;
     box-shadow: 0 0 0 5px rgba(255,255,255,.06);
   }
-
-  .ok{ color: rgba(255,255,255,.92); }
   .goodDot{ background: var(--good); box-shadow: 0 0 0 6px var(--goodSoft); }
   .badDot{ background: var(--bad); box-shadow: 0 0 0 6px var(--badSoft); }
   .warnDot{ background: var(--warn); box-shadow: 0 0 0 6px var(--warnSoft); }
@@ -208,17 +237,93 @@
     flex-wrap: wrap;
   }
 
-  .btn{
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.18);
-    color: rgba(255,255,255,.82);
-    cursor:pointer;
+  /* ===== Custom Dropdown (Apple glass + reveal animation) ===== */
+  .dd{
+    position: relative;
+    width: 100%;
   }
-  .btn:active{ transform: scale(.98); }
+
+  .ddBtn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.22);
+    color: rgba(255,255,255,.92);
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor:pointer;
+    transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ddBtn:hover{ background: rgba(0,0,0,.26); }
+  .ddBtn:active{ transform: scale(.99); }
+
+  .ddLeft{
+    display:flex; align-items:center; gap:10px;
+    min-width:0;
+  }
+  .ddDot{
+    width:9px; height:9px; border-radius:50%;
+    box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+    flex: 0 0 auto;
+  }
+  .ddText{
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .ddChevron{
+    width:10px; height:10px;
+    border-right:2px solid rgba(255,255,255,.70);
+    border-bottom:2px solid rgba(255,255,255,.70);
+    transform: rotate(45deg);
+    transition: transform 180ms ease;
+    flex: 0 0 auto;
+  }
+  .dd.open .ddChevron{ transform: rotate(-135deg); }
+
+  .ddMenu{
+    position:absolute;
+    left:0; right:0;
+    top: calc(100% + 8px);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(10,10,10,.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow:hidden;
+    z-index: 50;
+
+    opacity:0;
+    transform: translateY(-6px) scale(.985);
+    pointer-events:none;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .dd.open .ddMenu{
+    opacity:1;
+    transform: translateY(0px) scale(1);
+    pointer-events:auto;
+  }
+
+  .ddItem{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 10px 10px;
+    cursor:pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: rgba(255,255,255,.90);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    transition: background 140ms ease;
+  }
+  .ddItem:last-child{ border-bottom:none; }
+  .ddItem:hover{ background: rgba(255,255,255,.06); }
+  .ddItem small{ color: rgba(255,255,255,.60); font-size: 10px; }
 
   /* mobile */
   @media (max-width: 760px){
@@ -231,18 +336,18 @@
 <div class="wrap">
   <div class="panel">
     <div class="top">
-      <div class="chip" id="topChip">Lucid Flex — Size / Risk Calculator</div>
+      <div class="chip">Lucid Flex — Size / Risk Calculator</div>
     </div>
 
     <div class="content">
-
       <div class="grid">
+
         <!-- LEFT: CALCULATOR -->
         <div class="card">
           <div class="titleRow">
             <div>
               <div style="font-weight:800;font-size:13px;letter-spacing:.2px;">Position Size</div>
-              <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);">
+              <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);" id="formulaLine">
                 Size = Risk ÷ (Stop × $/Point)
               </div>
             </div>
@@ -257,20 +362,43 @@
             <div class="field">
               <div class="fieldTop">
                 <div class="label">SYMBOL</div>
-                <div class="help">micros</div>
+                <div class="help">glass menu</div>
               </div>
-              <select id="symbol">
-                <option value="MNQ">MNQ</option>
-                <option value="MES">MES</option>
-                <option value="MGC">MGC1!</option>
-                <option value="SI">SI1!</option>
-              </select>
+
+              <!-- Custom dropdown -->
+              <div class="dd" id="dd">
+                <button class="ddBtn" id="ddBtn" type="button" aria-label="Choose symbol">
+                  <div class="ddLeft">
+                    <span class="ddDot" id="ddDot"></span>
+                    <span class="ddText" id="ddText">MNQ</span>
+                  </div>
+                  <span class="ddChevron"></span>
+                </button>
+
+                <div class="ddMenu" id="ddMenu" role="listbox" aria-label="Symbols">
+                  <div class="ddItem" data-val="MNQ">
+                    <div>MNQ</div><small>$2/pt</small>
+                  </div>
+                  <div class="ddItem" data-val="MES">
+                    <div>MES</div><small>$5/pt</small>
+                  </div>
+                  <div class="ddItem" data-val="MGC">
+                    <div>MGC1!</div><small>$10/1.0</small>
+                  </div>
+                  <div class="ddItem" data-val="SI">
+                    <div>SI1!</div><small>$5 per 0.01</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden real value -->
+              <input id="symbol" type="hidden" value="MNQ" />
             </div>
 
-            <div class="field">
+            <div class="field" id="riskField">
               <div class="fieldTop">
                 <div class="label">$ RISK (PER TRADE)</div>
-                <div class="help">50–120</div>
+                <div class="help" id="riskHint">50–120</div>
               </div>
               <input id="risk" type="number" inputmode="decimal" min="0" step="1" value="100" />
             </div>
@@ -279,24 +407,26 @@
           <div class="row">
             <div class="field">
               <div class="fieldTop">
-                <div class="label">STOP (POINTS)</div>
+                <div class="label" id="stopLabel">STOP (POINTS)</div>
                 <div class="help" id="stopHint">typical 20–40</div>
               </div>
               <input id="stop" type="number" inputmode="decimal" min="0" step="0.25" value="25" />
+              <div class="presetRow" id="stopPresets"></div>
             </div>
 
             <div class="field">
               <div class="fieldTop">
-                <div class="label">TP (POINTS)</div>
+                <div class="label" id="tpLabel">TP (POINTS)</div>
                 <div class="help" id="tpHint">optional</div>
               </div>
               <input id="tp" type="number" inputmode="decimal" min="0" step="0.25" value="80" />
+              <div class="presetRow" id="tpPresets"></div>
             </div>
           </div>
 
           <div style="margin-top:10px;" class="outputs">
             <div class="out">
-              <div class="label">CONTRACTS (MICROS)</div>
+              <div class="label">CONTRACTS</div>
               <div class="outVal" id="contracts">0</div>
             </div>
             <div class="out">
@@ -308,15 +438,15 @@
               <div class="outVal" id="profitOut">$0</div>
             </div>
             <div class="out">
-              <div class="label">$ / POINT (1 MICRO)</div>
+              <div class="label" id="ppLabel">$ / POINT (1 MICRO)</div>
               <div class="outVal" id="ppOut">$0</div>
             </div>
           </div>
 
           <div class="pillRow" id="recPills"></div>
 
-          <div class="status" id="statusBox">
-            <div class="statusLine" id="statusLine">
+          <div class="status">
+            <div class="statusLine">
               <div class="statusDot goodDot" id="statusDot"></div>
               <div id="statusText">Ready.</div>
             </div>
@@ -360,7 +490,7 @@
             <div class="statusLine">
               <div class="statusDot" id="guardDot" style="background:rgba(255,255,255,.7);"></div>
               <div id="guardText" style="color:rgba(255,255,255,.82);">
-                Keep it simple: 1 clean win OR 2 losses.
+                Keep it clean: 1 win OR 2 losses.
               </div>
             </div>
           </div>
@@ -376,66 +506,91 @@
             </div>
           </div>
 
+          <!-- Motivating + useful (trading-based) -->
           <div class="pillRow">
-            <div class="pill">Stop before entry</div>
-            <div class="pill">No adding to losers</div>
-            <div class="pill">Target $150 → stop</div>
-            <div class="pill">Max 40 micros total</div>
+            <div class="pill">Protect green days</div>
+            <div class="pill">One setup only</div>
+            <div class="pill">Hit +$150 → stop</div>
+            <div class="pill">1 win or 2 losses → done</div>
+          </div>
+
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="resetDayBtn" type="button">Reset Today</button>
           </div>
         </div>
+
       </div>
     </div>
 
     <div class="footer">
-      <!-- USER SAID: don’t display reset text -> so we keep it clean -->
-      <button class="btn" id="clearBtn" type="button">Clear Inputs</button>
-      <button class="btn" id="resetDayBtn" type="button">Reset Today</button>
+      <button class="btn" id="clearBtn" type="button">Reset Inputs</button>
+      <button class="btn" id="zeroBtn" type="button">Zero Risk/TP</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ===== Symbol specs based on YOUR info =====
+  // ===== Specs (based on your exact rules) =====
   const SPECS = {
     MNQ: {
-      name: "MNQ",
-      badge: "MNQ • $2/pt",
-      dot: "rgba(40,230,165,.95)",
+      key:"MNQ",
+      label:"MNQ",
+      badge:"MNQ • $2/pt",
+      dot:"rgba(40,230,165,.95)",
       dollarsPerPoint: 2,
-      stopHint: "typical 20–40",
-      tpHint: "typical 60–100",
-      rec: ["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"]
+      stopHint:"typical 20–40",
+      tpHint:"typical 60–100",
+      stopStep: 0.25,
+      tpStep: 0.25,
+      stopPresets:[20,25,30,40],
+      tpPresets:[60,80,100],
+      rec:["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"]
     },
     MES: {
-      name: "MES",
-      badge: "MES • $5/pt",
-      dot: "rgba(40,230,165,.95)",
+      key:"MES",
+      label:"MES",
+      badge:"MES • $5/pt",
+      dot:"rgba(40,230,165,.95)",
       dollarsPerPoint: 5,
-      stopHint: "typical 5–10",
-      tpHint: "typical 10–20",
-      rec: ["Challenge: 1–2", "Funded: 1–4"]
+      stopHint:"typical 5–10",
+      tpHint:"typical 10–20",
+      stopStep: 0.25,
+      tpStep: 0.25,
+      stopPresets:[5,8,10],
+      tpPresets:[10,12,20],
+      rec:["Challenge: 1–2", "Funded: 1–4"]
     },
     MGC: {
-      name: "MGC1!",
-      badge: "MGC1! • $10/1.0",
-      dot: "rgba(255,211,77,.95)",
+      key:"MGC",
+      label:"MGC1!",
+      badge:"MGC1! • $10/1.0",
+      dot:"rgba(255,211,77,.95)",
       dollarsPerPoint: 10,
-      stopHint: "typical 1.0–2.5",
-      tpHint: "typical 3.0–6.0",
-      rec: ["Challenge: 1–2", "Funded: 1–3"]
+      stopHint:"typical 1.0–2.5",
+      tpHint:"typical 3.0–6.0",
+      stopStep: 0.1,
+      tpStep: 0.1,
+      stopPresets:[1.0,1.5,2.0,2.5],
+      tpPresets:[3.0,4.0,5.0,6.0],
+      rec:["Challenge: 1–2", "Funded: 1–3"]
     },
     SI: {
-      name: "SI1!",
-      badge: "SI1! • ADVANCED",
-      dot: "rgba(255,77,109,.95)",
-      dollarsPerPoint: null, // intentionally not fixed here (you flagged volatility)
-      stopHint: "tight stop only",
-      tpHint: "tight TP only",
-      rec: ["Challenge: avoid", "Funded: 1 micro MAX", "Risk cap: $50 MAX"]
+      key:"SI",
+      label:"SI1!",
+      badge:"SI1! • $5 per 0.01",
+      dot:"rgba(255,77,109,.95)",
+      // SI uses fixed 1 micro, risk controlled by stop distance:
+      // Dollar Risk = (StopDistance / 0.01) * 5
+      stopHint:"must be 0.02–0.05",
+      tpHint:"typical 0.06–0.12",
+      stopStep: 0.001,
+      tpStep: 0.001,
+      stopPresets:[0.02,0.03,0.04,0.05],
+      tpPresets:[0.06,0.10,0.12],
+      rec:["Challenge: avoid", "Funded: 1 micro ONLY", "Daily silver loss: $50 max"]
     }
   };
 
-  // ===== Lucid rules =====
   const RULES = {
     riskMin: 50,
     riskMax: 120,
@@ -458,6 +613,7 @@
 
   const specText = document.getElementById("specText");
   const specDot = document.getElementById("specDot");
+
   const stopHint = document.getElementById("stopHint");
   const tpHint = document.getElementById("tpHint");
   const recPills = document.getElementById("recPills");
@@ -474,11 +630,27 @@
 
   const clearBtn = document.getElementById("clearBtn");
   const resetDayBtn = document.getElementById("resetDayBtn");
+  const zeroBtn = document.getElementById("zeroBtn");
 
-  // ===== Daily persistence (so it survives closing Notion on phone) =====
-  // Uses localStorage. If Notion webview wipes storage, the state may reset.
-  // This saves daily fields (todayLoss, tradesToday) + last inputs.
-  const LS_KEY = "lucid_calc_state_v1";
+  const stopPresets = document.getElementById("stopPresets");
+  const tpPresets = document.getElementById("tpPresets");
+
+  const stopLabel = document.getElementById("stopLabel");
+  const tpLabel = document.getElementById("tpLabel");
+  const ppLabel = document.getElementById("ppLabel");
+  const formulaLine = document.getElementById("formulaLine");
+  const riskField = document.getElementById("riskField");
+  const riskHint = document.getElementById("riskHint");
+
+  // Dropdown DOM
+  const dd = document.getElementById("dd");
+  const ddBtn = document.getElementById("ddBtn");
+  const ddMenu = document.getElementById("ddMenu");
+  const ddText = document.getElementById("ddText");
+  const ddDot = document.getElementById("ddDot");
+
+  // ===== Persistence =====
+  const LS_KEY = "lucid_calc_state_v2";
 
   function loadState(){
     try{
@@ -486,6 +658,7 @@
       return raw ? JSON.parse(raw) : null;
     }catch{ return null; }
   }
+
   function saveState(){
     const data = {
       symbol: symbolEl.value,
@@ -494,7 +667,6 @@
       tp: tpEl.value,
       todayLoss: todayLossEl.value,
       tradesToday: tradesTodayEl.value,
-      // date stamp for daily reset at ET midnight (simple local date is fine for this use)
       dayStamp: new Date().toISOString().slice(0,10)
     };
     localStorage.setItem(LS_KEY, JSON.stringify(data));
@@ -504,14 +676,14 @@
     const s = loadState();
     if(!s) return;
 
-    // Daily reset check (based on ISO date). If different day -> reset day fields only.
     const todayStamp = new Date().toISOString().slice(0,10);
     const sameDay = (s.dayStamp === todayStamp);
 
-    symbolEl.value = s.symbol ?? "MNQ";
+    setSymbol(s.symbol ?? "MNQ", false);
+
     riskEl.value = s.risk ?? "100";
-    stopEl.value = s.stop ?? "25";
-    tpEl.value = s.tp ?? "80";
+    stopEl.value = s.stop ?? defaultStop(symbolEl.value);
+    tpEl.value = s.tp ?? defaultTP(symbolEl.value);
 
     if(sameDay){
       todayLossEl.value = s.todayLoss ?? "0";
@@ -519,7 +691,6 @@
     }else{
       todayLossEl.value = "0";
       tradesTodayEl.value = "0";
-      // update stamp
       saveState();
     }
   }
@@ -529,12 +700,18 @@
     const x = Number(v);
     return Number.isFinite(x) ? x : 0;
   }
-  function money(n){
+
+  function money0(n){
     const sign = n < 0 ? "-" : "";
     const val = Math.abs(n);
     return sign + "$" + val.toFixed(0);
   }
-  function clampMin(v, min){ return v < min ? min : v; }
+
+  function money2(n){
+    const sign = n < 0 ? "-" : "";
+    const val = Math.abs(n);
+    return sign + "$" + val.toFixed(2);
+  }
 
   function setStatus(kind, text){
     statusText.textContent = text;
@@ -550,15 +727,114 @@
     else { guardDot.className = "statusDot badDot"; }
   }
 
-  function renderSpec(){
-    const sym = symbolEl.value;
+  function defaultStop(sym){
+    if(sym==="MES") return "8";
+    if(sym==="MGC") return "2.0";
+    if(sym==="SI")  return "0.04";
+    return "25";
+  }
+
+  function defaultTP(sym){
+    if(sym==="MES") return "12";
+    if(sym==="MGC") return "5.0";
+    if(sym==="SI")  return "0.12";
+    return "80";
+  }
+
+  // ===== Custom Dropdown logic =====
+  function openDD(){ dd.classList.add("open"); }
+  function closeDD(){ dd.classList.remove("open"); }
+
+  ddBtn.addEventListener("click", ()=>{
+    dd.classList.contains("open") ? closeDD() : openDD();
+  });
+
+  document.addEventListener("click", (e)=>{
+    if(!dd.contains(e.target)) closeDD();
+  });
+
+  ddMenu.querySelectorAll(".ddItem").forEach(item=>{
+    item.addEventListener("click", ()=>{
+      const val = item.getAttribute("data-val");
+      setSymbol(val, true);
+      closeDD();
+    });
+  });
+
+  function setSymbol(sym, alsoResetInputs){
+    if(!SPECS[sym]) sym = "MNQ";
+    symbolEl.value = sym;
+
     const sp = SPECS[sym];
+
+    ddText.textContent = sp.label;
+    ddDot.style.background = sp.dot;
 
     specText.textContent = sp.badge;
     specDot.style.background = sp.dot;
 
     stopHint.textContent = sp.stopHint;
     tpHint.textContent = sp.tpHint;
+
+    // labels for SI
+    if(sym === "SI"){
+      stopLabel.textContent = "STOP (DISTANCE)";
+      tpLabel.textContent = "TP (DISTANCE)";
+      ppLabel.textContent = "$ PER 0.01 (1 MICRO)";
+      formulaLine.textContent = "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1";
+      riskHint.textContent = "auto (cap $50)";
+      // keep risk field but we will cap it in calc based on stop
+    }else{
+      stopLabel.textContent = "STOP (POINTS)";
+      tpLabel.textContent = "TP (POINTS)";
+      ppLabel.textContent = "$ / POINT (1 MICRO)";
+      formulaLine.textContent = "Size = Risk ÷ (Stop × $/Point)";
+      riskHint.textContent = "50–120";
+    }
+
+    // input steps
+    stopEl.step = String(sp.stopStep);
+    tpEl.step = String(sp.tpStep);
+
+    // presets
+    renderPresets(sp);
+
+    if(alsoResetInputs){
+      riskEl.value = (sym==="SI") ? "50" : "100";
+      stopEl.value = defaultStop(sym);
+      tpEl.value = defaultTP(sym);
+    }
+
+    updateAll();
+  }
+
+  function renderPresets(sp){
+    stopPresets.innerHTML = "";
+    tpPresets.innerHTML = "";
+
+    sp.stopPresets.forEach(v=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pillBtn";
+      b.textContent = String(v);
+      b.addEventListener("click", ()=>{
+        stopEl.value = String(v);
+        updateAll();
+      });
+      stopPresets.appendChild(b);
+    });
+
+    sp.tpPresets.forEach(v=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pillBtn";
+      b.textContent = String(v);
+      b.addEventListener("click", ()=>{
+        tpEl.value = String(v);
+        updateAll();
+      });
+      tpPresets.appendChild(b);
+    });
 
     recPills.innerHTML = "";
     sp.rec.forEach(t=>{
@@ -567,92 +843,99 @@
       p.textContent = t;
       recPills.appendChild(p);
     });
-
-    // SI warnings: set placeholders for dollarsPerPoint (since SI varies)
-    if(sym === "SI"){
-      ppOutEl.textContent = "—";
-    }
   }
 
+  // ===== Calculations =====
   function calc(){
     const sym = symbolEl.value;
     const sp = SPECS[sym];
 
     let risk = num(riskEl.value);
-    let stop = num(stopEl.value);
-    let tp = num(tpEl.value);
+    const stop = num(stopEl.value);
+    const tp = num(tpEl.value);
 
-    // Guard bad inputs
     if(stop <= 0){
       contractsEl.textContent = "0";
       riskOutEl.textContent = "$0";
       profitOutEl.textContent = "$0";
-      if(sym !== "SI") ppOutEl.textContent = money(sp.dollarsPerPoint);
-      setStatus("warn", "Enter a valid stop (points).");
+      ppOutEl.textContent = "$0";
+      setStatus("warn","Enter a valid stop.");
       return;
     }
 
-    // Enforce SI caps (your rule: avoid in challenge, funded 1 micro max, $50 risk max)
+    // ===== SI (fixed 1 micro) =====
     if(sym === "SI"){
-      if(risk > RULES.siMaxRisk) risk = RULES.siMaxRisk;
-      // We cannot compute SI contracts without a fixed $/point spec from you.
-      // So we turn SI into a strict warning + manual mode:
-      contractsEl.textContent = "1 (MAX)";
-      riskOutEl.textContent = money(risk);
-      profitOutEl.textContent = "—";
-      ppOutEl.textContent = "—";
+      // per your spec: $5 per 0.01 move, contracts fixed 1 micro
+      const dollarsPer001 = 5;
 
-      // Status messages
-      setStatus("warn", "SI1! mode: capped to $50 risk + 1 micro max. (No sizing calc without exact $/point spec.)");
+      // Dollar Risk = (StopDistance / 0.01) * 5
+      const dollarRisk = (stop / 0.01) * dollarsPer001;
+
+      // Profit = (TPDistance / 0.01) * 5
+      const profit = tp > 0 ? (tp / 0.01) * dollarsPer001 : 0;
+
+      contractsEl.textContent = "1";
+      ppOutEl.textContent = "$5";
+      // show SI money with 0 decimals (clean)
+      riskOutEl.textContent = money0(dollarRisk);
+      profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
+
+      const warnings = [];
+
+      // stop range rule
+      if(stop < 0.02) warnings.push("Stop too tight (< 0.02).");
+      if(stop > 0.05) warnings.push("Stop too wide (> 0.05). No trade.");
+
+      // silver daily loss tolerance
+      if(dollarRisk > RULES.siMaxRisk) warnings.push("Risk > $50 on Silver. No trade.");
+
+      // tp typical guidance
+      if(tp > 0 && tp < 0.06) warnings.push("TP too small (< 0.06).");
+      if(tp > 0 && tp > 0.12) warnings.push("TP unusually large (> 0.12).");
+
+      if(warnings.length === 0){
+        setStatus("good","SI1! OK: 1 micro fixed. Risk controlled by stop distance.");
+      }else{
+        setStatus(warnings.some(x=>x.includes("No trade")) ? "bad" : "warn", warnings.join(" "));
+      }
+
       return;
     }
 
+    // ===== MNQ / MES / MGC normal sizing =====
     const pp = sp.dollarsPerPoint; // $ per point for 1 micro
-    ppOutEl.textContent = money(pp);
 
-    // Core sizing formula: contracts = floor( risk / (stop * pp) )
-    let rawContracts = risk / (stop * pp);
-    let contracts = Math.floor(rawContracts);
-
-    // Never allow 0 if user is trying to size (but keep it safe)
-    contracts = clampMin(contracts, 0);
-
-    // Enforce global max micros
-    if(contracts > RULES.maxMicrosTotal){
-      contracts = RULES.maxMicrosTotal;
-    }
+    // contracts = floor( risk / (stop * pp) )
+    const raw = risk / (stop * pp);
+    let contracts = Math.floor(raw);
+    if(contracts < 0) contracts = 0;
+    if(contracts > RULES.maxMicrosTotal) contracts = RULES.maxMicrosTotal;
 
     const totalRisk = contracts * stop * pp;
     const profit = (tp > 0) ? (tp * pp * contracts) : 0;
 
     contractsEl.textContent = String(contracts);
-    riskOutEl.textContent = money(totalRisk);
-    profitOutEl.textContent = tp > 0 ? money(profit) : "$0";
+    ppOutEl.textContent = money0(pp);
+    riskOutEl.textContent = money0(totalRisk);
+    profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
 
-    // Status logic (warnings)
     const warnings = [];
-
-    // risk per trade band
     const origRisk = num(riskEl.value);
+
     if(origRisk < RULES.riskMin || origRisk > RULES.riskMax){
       warnings.push(`Risk should be ${RULES.riskMin}–${RULES.riskMax}.`);
     }
-
-    // contract 0 warnings
     if(contracts === 0){
-      warnings.push("Risk too low for this stop. Reduce stop or increase risk (within rules).");
+      warnings.push("Risk too low for this stop. Reduce stop or raise risk (within rules).");
     }
-
-    // max micros
-    if(num(rawContracts) > RULES.maxMicrosTotal){
+    if(raw > RULES.maxMicrosTotal){
       warnings.push("Clamped to 40 micros max.");
     }
 
-    // show clean status
     if(warnings.length === 0){
-      setStatus("good", "Sizing OK. Stop decides size.");
-    }else if(warnings.length === 1){
-      setStatus("warn", warnings[0]);
+      setStatus("good","Sizing OK. Stop decides size.");
+    }else if(warnings.some(x=>x.includes("0"))){
+      setStatus("warn", warnings.join(" "));
     }else{
       setStatus("warn", warnings.join(" "));
     }
@@ -663,39 +946,49 @@
     const trades = num(tradesTodayEl.value);
 
     const remaining = Math.max(0, RULES.dailyMaxLoss - loss);
-    remainDailyEl.textContent = money(remaining);
+    remainDailyEl.textContent = money0(remaining);
 
-    // Decision text
     if(loss >= RULES.dailyMaxLoss){
       nextMoveEl.textContent = "STOP";
-      setGuard("bad", "Daily max loss hit. Stop trading.");
+      setGuard("bad","Daily max loss hit. Stop trading.");
     }else if(trades >= 2){
       nextMoveEl.textContent = "STOP";
-      setGuard("warn", "2 trades done. Stop trading (Lucid rule).");
+      setGuard("warn","2 trades done. Stop trading (Lucid rule).");
     }else{
       nextMoveEl.textContent = "TRADE OK";
-      setGuard("good", "Trade allowed. 1–2 trades max.");
+      setGuard("good","Trade allowed. 1–2 trades max.");
     }
   }
 
   function updateAll(){
-    renderSpec();
+    // Ensure MGC always recalculates (bugfix: force numeric normalize)
+    if(symbolEl.value === "MGC"){
+      if(stopEl.value === "") stopEl.value = defaultStop("MGC");
+      if(tpEl.value === "") tpEl.value = defaultTP("MGC");
+    }
+
     calc();
     calcGuards();
     saveState();
   }
 
-  // ===== Events =====
-  [symbolEl, riskEl, stopEl, tpEl, todayLossEl, tradesTodayEl].forEach(el=>{
+  // ===== Controls =====
+  [riskEl, stopEl, tpEl, todayLossEl, tradesTodayEl].forEach(el=>{
     el.addEventListener("input", updateAll);
     el.addEventListener("change", updateAll);
   });
 
   clearBtn.addEventListener("click", ()=>{
-    // keep symbol, clear sizing inputs only
-    riskEl.value = "100";
-    stopEl.value = (symbolEl.value === "MES") ? "8" : (symbolEl.value === "MGC" ? "2" : "25");
-    tpEl.value = (symbolEl.value === "MES") ? "12" : (symbolEl.value === "MGC" ? "5" : "80");
+    const sym = symbolEl.value;
+    riskEl.value = (sym==="SI") ? "50" : "100";
+    stopEl.value = defaultStop(sym);
+    tpEl.value = defaultTP(sym);
+    updateAll();
+  });
+
+  zeroBtn.addEventListener("click", ()=>{
+    riskEl.value = "0";
+    tpEl.value = "0";
     updateAll();
   });
 
@@ -705,7 +998,9 @@
     updateAll();
   });
 
-  // ===== init =====
+  // ===== Init =====
+  // set initial symbol UI
+  setSymbol("MNQ", false);
   restoreState();
   updateAll();
 </script>
