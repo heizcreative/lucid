@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lucid Flex Risk + Size Calculator</title>
+<title>Lucid Flex Calculator</title>
 
 <style>
   :root{
     --bg: #191919;
     --panel: rgba(255,255,255,.035);
-    --stroke: rgba(255,255,255,.10);
     --stroke2: rgba(255,255,255,.08);
     --text: rgba(255,255,255,.92);
     --muted: rgba(255,255,255,.62);
@@ -32,7 +31,7 @@
   html,body{ height:100%; margin:0; background: var(--bg); }
   body{ font-family: var(--sans); color: var(--text); padding: 10px; }
 
-  .wrap{ width:100%; max-width: 900px; margin: 0 auto; }
+  .wrap{ width:100%; max-width: 680px; margin: 0 auto; }
 
   .panel{
     background: var(--panel);
@@ -61,13 +60,7 @@
     white-space: nowrap;
   }
 
-  .content{ padding: 12px; display:flex; flex-direction:column; gap: 10px; }
-
-  .grid{
-    display:grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 10px;
-  }
+  .content{ padding: 12px; }
 
   .card{
     border: 1px solid rgba(255,255,255,.10);
@@ -139,39 +132,34 @@
     font-size: 12px;
   }
 
-  /* ===== Apple glass buttons ===== */
-  .btn, .pillBtn{
+  /* Apple glass buttons */
+  .pillBtn, .btn{
     font-family: var(--mono);
-    font-size: 11px;
-    padding: 8px 12px;
+    font-size: 10px;
+    padding: 6px 10px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,.12);
     background: rgba(0,0,0,.18);
     color: rgba(255,255,255,.82);
     cursor:pointer;
-    transition: transform 120ms ease, background 160ms ease, border-color 160ms ease;
+    transition: transform 120ms ease, background 160ms ease;
     user-select:none;
     -webkit-tap-highlight-color: transparent;
+    min-height: 28px;
   }
-  .btn:hover, .pillBtn:hover{ background: rgba(0,0,0,.22); }
-  .btn:active, .pillBtn:active{ transform: scale(.98); }
+  .pillBtn:hover, .btn:hover{ background: rgba(0,0,0,.22); }
+  .pillBtn:active, .btn:active{ transform: scale(.98); }
 
-  /* preset rows */
   .presetRow{
     display:flex; flex-wrap:wrap; gap:8px;
     margin-top: 8px;
-  }
-  .pillBtn{
-    padding: 6px 10px;
-    font-size: 10px;
-    border-radius: 999px;
-    min-height: 28px;
   }
 
   .outputs{
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    margin-top: 10px;
   }
 
   .out{
@@ -179,13 +167,13 @@
     background: rgba(0,0,0,.10);
     border-radius: 14px;
     padding: 10px;
-    min-height: 70px;
+    min-height: 64px;
     display:flex; flex-direction:column; justify-content:center;
   }
 
   .outVal{
     font-family: var(--mono);
-    font-size: 16px;
+    font-size: 15px;
     letter-spacing: .2px;
     margin-top: 4px;
   }
@@ -231,18 +219,13 @@
   .warnDot{ background: var(--warn); box-shadow: 0 0 0 6px var(--warnSoft); }
 
   .footer{
-    padding: 10px 12px;
-    border-top: 1px solid rgba(255,255,255,.07);
-    display:flex; justify-content:space-between; align-items:center; gap: 10px;
-    flex-wrap: wrap;
+    display:flex;
+    justify-content:flex-end;
+    padding-top: 10px;
   }
 
-  /* ===== Custom Dropdown (Apple glass + reveal animation) ===== */
-  .dd{
-    position: relative;
-    width: 100%;
-  }
-
+  /* Custom Dropdown (animated Apple glass) */
+  .dd{ position: relative; width: 100%; }
   .ddBtn{
     width:100%;
     display:flex;
@@ -257,24 +240,15 @@
     font-family: var(--mono);
     font-size: 12px;
     cursor:pointer;
-    transition: background 160ms ease, border-color 160ms ease, transform 120ms ease;
+    transition: background 160ms ease, transform 120ms ease;
     -webkit-tap-highlight-color: transparent;
   }
   .ddBtn:hover{ background: rgba(0,0,0,.26); }
   .ddBtn:active{ transform: scale(.99); }
 
-  .ddLeft{
-    display:flex; align-items:center; gap:10px;
-    min-width:0;
-  }
-  .ddDot{
-    width:9px; height:9px; border-radius:50%;
-    box-shadow: 0 0 0 4px rgba(255,255,255,.08);
-    flex: 0 0 auto;
-  }
-  .ddText{
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
+  .ddLeft{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .ddDot{ width:9px; height:9px; border-radius:50%; box-shadow: 0 0 0 4px rgba(255,255,255,.08); flex:0 0 auto; }
+  .ddText{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   .ddChevron{
     width:10px; height:10px;
@@ -325,9 +299,8 @@
   .ddItem:hover{ background: rgba(255,255,255,.06); }
   .ddItem small{ color: rgba(255,255,255,.60); font-size: 10px; }
 
-  /* mobile */
-  @media (max-width: 760px){
-    .grid{ grid-template-columns: 1fr; }
+  @media (max-width: 520px){
+    .wrap{ max-width: 520px; }
   }
 </style>
 </head>
@@ -336,271 +309,161 @@
 <div class="wrap">
   <div class="panel">
     <div class="top">
-      <div class="chip">Lucid Flex — Size / Risk Calculator</div>
+      <div class="chip">Lucid Flex — Risk + Size</div>
     </div>
 
     <div class="content">
-      <div class="grid">
-
-        <!-- LEFT: CALCULATOR -->
-        <div class="card">
-          <div class="titleRow">
-            <div>
-              <div style="font-weight:800;font-size:13px;letter-spacing:.2px;">Position Size</div>
-              <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);" id="formulaLine">
-                Size = Risk ÷ (Stop × $/Point)
-              </div>
-            </div>
-
-            <div class="badge" id="specBadge">
-              <span class="dot" id="specDot"></span>
-              <span id="specText">MNQ • $2/pt</span>
+      <div class="card">
+        <div class="titleRow">
+          <div>
+            <div style="font-weight:800;font-size:13px;letter-spacing:.2px;">Position Size</div>
+            <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);" id="formulaLine">
+              Size = Risk ÷ (Stop × $/Point)
             </div>
           </div>
+          <div class="badge">
+            <span class="dot" id="specDot"></span>
+            <span id="specText">MNQ • $2/pt</span>
+          </div>
+        </div>
 
-          <div class="row">
-            <div class="field">
-              <div class="fieldTop">
-                <div class="label">SYMBOL</div>
-                <div class="help">glass menu</div>
-              </div>
+        <div class="row">
+          <div class="field">
+            <div class="fieldTop">
+              <div class="label">SYMBOL</div>
+              <div class="help">glass</div>
+            </div>
 
-              <!-- Custom dropdown -->
-              <div class="dd" id="dd">
-                <button class="ddBtn" id="ddBtn" type="button" aria-label="Choose symbol">
-                  <div class="ddLeft">
-                    <span class="ddDot" id="ddDot"></span>
-                    <span class="ddText" id="ddText">MNQ</span>
-                  </div>
-                  <span class="ddChevron"></span>
-                </button>
-
-                <div class="ddMenu" id="ddMenu" role="listbox" aria-label="Symbols">
-                  <div class="ddItem" data-val="MNQ">
-                    <div>MNQ</div><small>$2/pt</small>
-                  </div>
-                  <div class="ddItem" data-val="MES">
-                    <div>MES</div><small>$5/pt</small>
-                  </div>
-                  <div class="ddItem" data-val="MGC">
-                    <div>MGC1!</div><small>$10/1.0</small>
-                  </div>
-                  <div class="ddItem" data-val="SI">
-                    <div>SI1!</div><small>$5 per 0.01</small>
-                  </div>
+            <div class="dd" id="dd">
+              <button class="ddBtn" id="ddBtn" type="button" aria-label="Choose symbol">
+                <div class="ddLeft">
+                  <span class="ddDot" id="ddDot"></span>
+                  <span class="ddText" id="ddText">MNQ</span>
                 </div>
-              </div>
+                <span class="ddChevron"></span>
+              </button>
 
-              <!-- Hidden real value -->
-              <input id="symbol" type="hidden" value="MNQ" />
+              <div class="ddMenu" id="ddMenu" role="listbox" aria-label="Symbols">
+                <div class="ddItem" data-val="MNQ"><div>MNQ</div><small>$2/pt</small></div>
+                <div class="ddItem" data-val="MES"><div>MES</div><small>$5/pt</small></div>
+                <div class="ddItem" data-val="MGC"><div>MGC1!</div><small>$10/1.0</small></div>
+                <div class="ddItem" data-val="SI"><div>SI1!</div><small>$5 per 0.01</small></div>
+              </div>
             </div>
 
-            <div class="field" id="riskField">
-              <div class="fieldTop">
-                <div class="label">$ RISK (PER TRADE)</div>
-                <div class="help" id="riskHint">50–120</div>
-              </div>
-              <input id="risk" type="number" inputmode="decimal" min="0" step="1" value="100" />
-            </div>
+            <input id="symbol" type="hidden" value="MNQ" />
           </div>
 
-          <div class="row">
-            <div class="field">
-              <div class="fieldTop">
-                <div class="label" id="stopLabel">STOP (POINTS)</div>
-                <div class="help" id="stopHint">typical 20–40</div>
-              </div>
-              <input id="stop" type="number" inputmode="decimal" min="0" step="0.25" value="25" />
-              <div class="presetRow" id="stopPresets"></div>
+          <div class="field" id="riskField">
+            <div class="fieldTop">
+              <div class="label" id="riskLabel">$ RISK (PER TRADE)</div>
+              <div class="help" id="riskHint">50–120</div>
             </div>
-
-            <div class="field">
-              <div class="fieldTop">
-                <div class="label" id="tpLabel">TP (POINTS)</div>
-                <div class="help" id="tpHint">optional</div>
-              </div>
-              <input id="tp" type="number" inputmode="decimal" min="0" step="0.25" value="80" />
-              <div class="presetRow" id="tpPresets"></div>
-            </div>
-          </div>
-
-          <div style="margin-top:10px;" class="outputs">
-            <div class="out">
-              <div class="label">CONTRACTS</div>
-              <div class="outVal" id="contracts">0</div>
-            </div>
-            <div class="out">
-              <div class="label">TOTAL RISK ($)</div>
-              <div class="outVal" id="riskOut">$0</div>
-            </div>
-            <div class="out">
-              <div class="label">TP PROFIT ($)</div>
-              <div class="outVal" id="profitOut">$0</div>
-            </div>
-            <div class="out">
-              <div class="label" id="ppLabel">$ / POINT (1 MICRO)</div>
-              <div class="outVal" id="ppOut">$0</div>
-            </div>
-          </div>
-
-          <div class="pillRow" id="recPills"></div>
-
-          <div class="status">
-            <div class="statusLine">
-              <div class="statusDot goodDot" id="statusDot"></div>
-              <div id="statusText">Ready.</div>
-            </div>
+            <input id="risk" type="number" inputmode="decimal" min="0" step="1" value="100" />
           </div>
         </div>
 
-        <!-- RIGHT: DAILY GUARDS -->
-        <div class="card">
-          <div class="titleRow">
-            <div>
-              <div style="font-weight:800;font-size:13px;letter-spacing:.2px;">Daily Guards</div>
-              <div style="margin-top:2px;color:rgba(255,255,255,.58);font-size:11px;font-family:var(--mono);">
-                Daily max loss: $250 • 1–2 trades
-              </div>
+        <div class="row">
+          <div class="field">
+            <div class="fieldTop">
+              <div class="label" id="stopLabel">STOP (POINTS)</div>
+              <div class="help" id="stopHint">typical 20–40</div>
             </div>
-            <div class="badge">
-              <span class="dot" style="background:rgba(255,255,255,.7);"></span>
-              <span>Lucid 50K</span>
-            </div>
+            <input id="stop" type="number" inputmode="decimal" min="0" step="0.25" value="25" />
+            <div class="presetRow" id="stopPresets"></div>
           </div>
 
-          <div class="row">
-            <div class="field">
-              <div class="fieldTop">
-                <div class="label">TODAY LOSSES ($)</div>
-                <div class="help">max 250</div>
-              </div>
-              <input id="todayLoss" type="number" inputmode="decimal" min="0" step="1" value="0" />
+          <div class="field">
+            <div class="fieldTop">
+              <div class="label" id="tpLabel">TP (POINTS)</div>
+              <div class="help" id="tpHint">optional</div>
             </div>
-
-            <div class="field">
-              <div class="fieldTop">
-                <div class="label">TRADES TODAY</div>
-                <div class="help">1–2</div>
-              </div>
-              <input id="tradesToday" type="number" inputmode="numeric" min="0" step="1" value="0" />
-            </div>
-          </div>
-
-          <div class="status" style="margin-top:10px;">
-            <div class="statusLine">
-              <div class="statusDot" id="guardDot" style="background:rgba(255,255,255,.7);"></div>
-              <div id="guardText" style="color:rgba(255,255,255,.82);">
-                Keep it clean: 1 win OR 2 losses.
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top:10px;" class="outputs">
-            <div class="out">
-              <div class="label">REMAINING TO DAILY MAX</div>
-              <div class="outVal" id="remainDaily">$250</div>
-            </div>
-            <div class="out">
-              <div class="label">NEXT MOVE</div>
-              <div class="outVal" id="nextMove">TRADE OK</div>
-            </div>
-          </div>
-
-          <!-- Motivating + useful (trading-based) -->
-          <div class="pillRow">
-            <div class="pill">Protect green days</div>
-            <div class="pill">One setup only</div>
-            <div class="pill">Hit +$150 → stop</div>
-            <div class="pill">1 win or 2 losses → done</div>
-          </div>
-
-          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" id="resetDayBtn" type="button">Reset Today</button>
+            <input id="tp" type="number" inputmode="decimal" min="0" step="0.25" value="80" />
+            <div class="presetRow" id="tpPresets"></div>
           </div>
         </div>
 
+        <div class="outputs">
+          <div class="out">
+            <div class="label">CONTRACTS</div>
+            <div class="outVal" id="contracts">0</div>
+          </div>
+          <div class="out">
+            <div class="label">TOTAL RISK ($)</div>
+            <div class="outVal" id="riskOut">$0</div>
+          </div>
+          <div class="out">
+            <div class="label">TP PROFIT ($)</div>
+            <div class="outVal" id="profitOut">$0</div>
+          </div>
+          <div class="out">
+            <div class="label" id="ppLabel">$ / POINT (1 MICRO)</div>
+            <div class="outVal" id="ppOut">$0</div>
+          </div>
+        </div>
+
+        <div class="pillRow" id="recPills"></div>
+
+        <div class="status">
+          <div class="statusLine">
+            <div class="statusDot goodDot" id="statusDot"></div>
+            <div id="statusText">Ready.</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn" id="resetBtn" type="button">Reset Inputs</button>
+        </div>
       </div>
-    </div>
-
-    <div class="footer">
-      <button class="btn" id="clearBtn" type="button">Reset Inputs</button>
-      <button class="btn" id="zeroBtn" type="button">Zero Risk/TP</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ===== Specs (based on your exact rules) =====
   const SPECS = {
     MNQ: {
-      key:"MNQ",
-      label:"MNQ",
-      badge:"MNQ • $2/pt",
-      dot:"rgba(40,230,165,.95)",
+      key:"MNQ", label:"MNQ",
+      badge:"MNQ • $2/pt", dot:"rgba(40,230,165,.95)",
       dollarsPerPoint: 2,
-      stopHint:"typical 20–40",
-      tpHint:"typical 60–100",
-      stopStep: 0.25,
-      tpStep: 0.25,
+      stopHint:"typical 20–40", tpHint:"typical 60–100",
+      stopStep: 0.25, tpStep: 0.25,
       stopPresets:[20,25,30,40],
       tpPresets:[60,80,100],
       rec:["Challenge: 1–3", "Funded: 1–5", "Abs max: 40 (never)"]
     },
     MES: {
-      key:"MES",
-      label:"MES",
-      badge:"MES • $5/pt",
-      dot:"rgba(40,230,165,.95)",
+      key:"MES", label:"MES",
+      badge:"MES • $5/pt", dot:"rgba(40,230,165,.95)",
       dollarsPerPoint: 5,
-      stopHint:"typical 5–10",
-      tpHint:"typical 10–20",
-      stopStep: 0.25,
-      tpStep: 0.25,
+      stopHint:"typical 5–10", tpHint:"typical 10–20",
+      stopStep: 0.25, tpStep: 0.25,
       stopPresets:[5,8,10],
       tpPresets:[10,12,20],
       rec:["Challenge: 1–2", "Funded: 1–4"]
     },
     MGC: {
-      key:"MGC",
-      label:"MGC1!",
-      badge:"MGC1! • $10/1.0",
-      dot:"rgba(255,211,77,.95)",
+      key:"MGC", label:"MGC1!",
+      badge:"MGC1! • $10/1.0", dot:"rgba(255,211,77,.95)",
       dollarsPerPoint: 10,
-      stopHint:"typical 1.0–2.5",
-      tpHint:"typical 3.0–6.0",
-      stopStep: 0.1,
-      tpStep: 0.1,
+      stopHint:"typical 1.0–2.5", tpHint:"typical 3.0–6.0",
+      stopStep: 0.1, tpStep: 0.1,
       stopPresets:[1.0,1.5,2.0,2.5],
       tpPresets:[3.0,4.0,5.0,6.0],
       rec:["Challenge: 1–2", "Funded: 1–3"]
     },
     SI: {
-      key:"SI",
-      label:"SI1!",
-      badge:"SI1! • $5 per 0.01",
-      dot:"rgba(255,77,109,.95)",
-      // SI uses fixed 1 micro, risk controlled by stop distance:
-      // Dollar Risk = (StopDistance / 0.01) * 5
-      stopHint:"must be 0.02–0.05",
-      tpHint:"typical 0.06–0.12",
-      stopStep: 0.001,
-      tpStep: 0.001,
+      key:"SI", label:"SI1!",
+      badge:"SI1! • $5 per 0.01", dot:"rgba(255,77,109,.95)",
+      stopHint:"must be 0.02–0.05", tpHint:"typical 0.06–0.12",
+      stopStep: 0.001, tpStep: 0.001,
       stopPresets:[0.02,0.03,0.04,0.05],
       tpPresets:[0.06,0.10,0.12],
       rec:["Challenge: avoid", "Funded: 1 micro ONLY", "Daily silver loss: $50 max"]
     }
   };
 
-  const RULES = {
-    riskMin: 50,
-    riskMax: 120,
-    dailyMaxLoss: 250,
-    maxMicrosTotal: 40,
-    siMaxRisk: 50,
-    siMaxContracts: 1
-  };
+  const RULES = { riskMin:50, riskMax:120, maxMicrosTotal:40, siMaxRisk:50 };
 
-  // ===== DOM =====
   const symbolEl = document.getElementById("symbol");
   const riskEl = document.getElementById("risk");
   const stopEl = document.getElementById("stop");
@@ -621,17 +484,6 @@
   const statusDot = document.getElementById("statusDot");
   const statusText = document.getElementById("statusText");
 
-  const todayLossEl = document.getElementById("todayLoss");
-  const tradesTodayEl = document.getElementById("tradesToday");
-  const guardDot = document.getElementById("guardDot");
-  const guardText = document.getElementById("guardText");
-  const remainDailyEl = document.getElementById("remainDaily");
-  const nextMoveEl = document.getElementById("nextMove");
-
-  const clearBtn = document.getElementById("clearBtn");
-  const resetDayBtn = document.getElementById("resetDayBtn");
-  const zeroBtn = document.getElementById("zeroBtn");
-
   const stopPresets = document.getElementById("stopPresets");
   const tpPresets = document.getElementById("tpPresets");
 
@@ -639,78 +491,51 @@
   const tpLabel = document.getElementById("tpLabel");
   const ppLabel = document.getElementById("ppLabel");
   const formulaLine = document.getElementById("formulaLine");
-  const riskField = document.getElementById("riskField");
   const riskHint = document.getElementById("riskHint");
+  const riskLabel = document.getElementById("riskLabel");
 
-  // Dropdown DOM
+  const resetBtn = document.getElementById("resetBtn");
+
+  // Dropdown
   const dd = document.getElementById("dd");
   const ddBtn = document.getElementById("ddBtn");
   const ddMenu = document.getElementById("ddMenu");
   const ddText = document.getElementById("ddText");
   const ddDot = document.getElementById("ddDot");
 
-  // ===== Persistence =====
-  const LS_KEY = "lucid_calc_state_v2";
+  // Persistence
+  const LS_KEY = "lucid_calc_compact_v1";
 
   function loadState(){
-    try{
-      const raw = localStorage.getItem(LS_KEY);
-      return raw ? JSON.parse(raw) : null;
-    }catch{ return null; }
+    try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; }
+    catch{ return null; }
   }
-
   function saveState(){
     const data = {
       symbol: symbolEl.value,
       risk: riskEl.value,
       stop: stopEl.value,
       tp: tpEl.value,
-      todayLoss: todayLossEl.value,
-      tradesToday: tradesTodayEl.value,
       dayStamp: new Date().toISOString().slice(0,10)
     };
     localStorage.setItem(LS_KEY, JSON.stringify(data));
   }
-
   function restoreState(){
     const s = loadState();
     if(!s) return;
-
-    const todayStamp = new Date().toISOString().slice(0,10);
-    const sameDay = (s.dayStamp === todayStamp);
-
     setSymbol(s.symbol ?? "MNQ", false);
-
-    riskEl.value = s.risk ?? "100";
+    riskEl.value = s.risk ?? defaultRisk(symbolEl.value);
     stopEl.value = s.stop ?? defaultStop(symbolEl.value);
     tpEl.value = s.tp ?? defaultTP(symbolEl.value);
-
-    if(sameDay){
-      todayLossEl.value = s.todayLoss ?? "0";
-      tradesTodayEl.value = s.tradesToday ?? "0";
-    }else{
-      todayLossEl.value = "0";
-      tradesTodayEl.value = "0";
-      saveState();
-    }
   }
 
-  // ===== Helpers =====
   function num(v){
     const x = Number(v);
     return Number.isFinite(x) ? x : 0;
   }
-
   function money0(n){
     const sign = n < 0 ? "-" : "";
-    const val = Math.abs(n);
-    return sign + "$" + val.toFixed(0);
-  }
-
-  function money2(n){
-    const sign = n < 0 ? "-" : "";
-    const val = Math.abs(n);
-    return sign + "$" + val.toFixed(2);
+    return sign + "$" + Math.abs(n).toFixed(0);
   }
 
   function setStatus(kind, text){
@@ -720,39 +545,32 @@
     else { statusDot.className = "statusDot badDot"; }
   }
 
-  function setGuard(kind, text){
-    guardText.textContent = text;
-    if(kind === "good"){ guardDot.className = "statusDot goodDot"; }
-    else if(kind === "warn"){ guardDot.className = "statusDot warnDot"; }
-    else { guardDot.className = "statusDot badDot"; }
-  }
-
   function defaultStop(sym){
     if(sym==="MES") return "8";
     if(sym==="MGC") return "2.0";
     if(sym==="SI")  return "0.04";
     return "25";
   }
-
   function defaultTP(sym){
     if(sym==="MES") return "12";
     if(sym==="MGC") return "5.0";
     if(sym==="SI")  return "0.12";
     return "80";
   }
+  function defaultRisk(sym){
+    return (sym==="SI") ? "50" : "100";
+  }
 
-  // ===== Custom Dropdown logic =====
+  // Dropdown controls
   function openDD(){ dd.classList.add("open"); }
   function closeDD(){ dd.classList.remove("open"); }
 
   ddBtn.addEventListener("click", ()=>{
     dd.classList.contains("open") ? closeDD() : openDD();
   });
-
   document.addEventListener("click", (e)=>{
     if(!dd.contains(e.target)) closeDD();
   });
-
   ddMenu.querySelectorAll(".ddItem").forEach(item=>{
     item.addEventListener("click", ()=>{
       const val = item.getAttribute("data-val");
@@ -760,53 +578,6 @@
       closeDD();
     });
   });
-
-  function setSymbol(sym, alsoResetInputs){
-    if(!SPECS[sym]) sym = "MNQ";
-    symbolEl.value = sym;
-
-    const sp = SPECS[sym];
-
-    ddText.textContent = sp.label;
-    ddDot.style.background = sp.dot;
-
-    specText.textContent = sp.badge;
-    specDot.style.background = sp.dot;
-
-    stopHint.textContent = sp.stopHint;
-    tpHint.textContent = sp.tpHint;
-
-    // labels for SI
-    if(sym === "SI"){
-      stopLabel.textContent = "STOP (DISTANCE)";
-      tpLabel.textContent = "TP (DISTANCE)";
-      ppLabel.textContent = "$ PER 0.01 (1 MICRO)";
-      formulaLine.textContent = "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1";
-      riskHint.textContent = "auto (cap $50)";
-      // keep risk field but we will cap it in calc based on stop
-    }else{
-      stopLabel.textContent = "STOP (POINTS)";
-      tpLabel.textContent = "TP (POINTS)";
-      ppLabel.textContent = "$ / POINT (1 MICRO)";
-      formulaLine.textContent = "Size = Risk ÷ (Stop × $/Point)";
-      riskHint.textContent = "50–120";
-    }
-
-    // input steps
-    stopEl.step = String(sp.stopStep);
-    tpEl.step = String(sp.tpStep);
-
-    // presets
-    renderPresets(sp);
-
-    if(alsoResetInputs){
-      riskEl.value = (sym==="SI") ? "50" : "100";
-      stopEl.value = defaultStop(sym);
-      tpEl.value = defaultTP(sym);
-    }
-
-    updateAll();
-  }
 
   function renderPresets(sp){
     stopPresets.innerHTML = "";
@@ -845,12 +616,59 @@
     });
   }
 
-  // ===== Calculations =====
+  function setSymbol(sym, resetInputs){
+    if(!SPECS[sym]) sym = "MNQ";
+    symbolEl.value = sym;
+
+    const sp = SPECS[sym];
+
+    ddText.textContent = sp.label;
+    ddDot.style.background = sp.dot;
+
+    specText.textContent = sp.badge;
+    specDot.style.background = sp.dot;
+
+    stopHint.textContent = sp.stopHint;
+    tpHint.textContent = sp.tpHint;
+
+    stopEl.step = String(sp.stopStep);
+    tpEl.step = String(sp.tpStep);
+
+    if(sym === "SI"){
+      stopLabel.textContent = "STOP (DISTANCE)";
+      tpLabel.textContent = "TP (DISTANCE)";
+      ppLabel.textContent = "$ PER 0.01 (1 MICRO)";
+      formulaLine.textContent = "Risk = (Stop ÷ 0.01) × $5 • Contracts = 1";
+      riskLabel.textContent = "RISK (INFO)";
+      riskHint.textContent = "auto from stop";
+      riskEl.disabled = true;
+      riskEl.style.opacity = ".55";
+    }else{
+      stopLabel.textContent = "STOP (POINTS)";
+      tpLabel.textContent = "TP (POINTS)";
+      ppLabel.textContent = "$ / POINT (1 MICRO)";
+      formulaLine.textContent = "Size = Risk ÷ (Stop × $/Point)";
+      riskLabel.textContent = "$ RISK (PER TRADE)";
+      riskHint.textContent = "50–120";
+      riskEl.disabled = false;
+      riskEl.style.opacity = "1";
+    }
+
+    renderPresets(sp);
+
+    if(resetInputs){
+      riskEl.value = defaultRisk(sym);
+      stopEl.value = defaultStop(sym);
+      tpEl.value = defaultTP(sym);
+    }
+
+    updateAll();
+  }
+
   function calc(){
     const sym = symbolEl.value;
     const sp = SPECS[sym];
 
-    let risk = num(riskEl.value);
     const stop = num(stopEl.value);
     const tp = num(tpEl.value);
 
@@ -863,33 +681,22 @@
       return;
     }
 
-    // ===== SI (fixed 1 micro) =====
+    // SI: fixed 1 micro, risk controlled by stop distance
     if(sym === "SI"){
-      // per your spec: $5 per 0.01 move, contracts fixed 1 micro
       const dollarsPer001 = 5;
 
-      // Dollar Risk = (StopDistance / 0.01) * 5
       const dollarRisk = (stop / 0.01) * dollarsPer001;
-
-      // Profit = (TPDistance / 0.01) * 5
-      const profit = tp > 0 ? (tp / 0.01) * dollarsPer001 : 0;
+      const profit = (tp > 0) ? (tp / 0.01) * dollarsPer001 : 0;
 
       contractsEl.textContent = "1";
       ppOutEl.textContent = "$5";
-      // show SI money with 0 decimals (clean)
       riskOutEl.textContent = money0(dollarRisk);
       profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
 
       const warnings = [];
-
-      // stop range rule
       if(stop < 0.02) warnings.push("Stop too tight (< 0.02).");
       if(stop > 0.05) warnings.push("Stop too wide (> 0.05). No trade.");
-
-      // silver daily loss tolerance
       if(dollarRisk > RULES.siMaxRisk) warnings.push("Risk > $50 on Silver. No trade.");
-
-      // tp typical guidance
       if(tp > 0 && tp < 0.06) warnings.push("TP too small (< 0.06).");
       if(tp > 0 && tp > 0.12) warnings.push("TP unusually large (> 0.12).");
 
@@ -902,10 +709,10 @@
       return;
     }
 
-    // ===== MNQ / MES / MGC normal sizing =====
-    const pp = sp.dollarsPerPoint; // $ per point for 1 micro
+    // Normal symbols
+    const pp = sp.dollarsPerPoint;
+    const risk = num(riskEl.value);
 
-    // contracts = floor( risk / (stop * pp) )
     const raw = risk / (stop * pp);
     let contracts = Math.floor(raw);
     if(contracts < 0) contracts = 0;
@@ -920,86 +727,34 @@
     profitOutEl.textContent = tp > 0 ? money0(profit) : "$0";
 
     const warnings = [];
-    const origRisk = num(riskEl.value);
+    if(risk < RULES.riskMin || risk > RULES.riskMax) warnings.push(`Risk should be ${RULES.riskMin}–${RULES.riskMax}.`);
+    if(contracts === 0) warnings.push("Risk too low for this stop.");
+    if(raw > RULES.maxMicrosTotal) warnings.push("Clamped to 40 micros max.");
 
-    if(origRisk < RULES.riskMin || origRisk > RULES.riskMax){
-      warnings.push(`Risk should be ${RULES.riskMin}–${RULES.riskMax}.`);
-    }
-    if(contracts === 0){
-      warnings.push("Risk too low for this stop. Reduce stop or raise risk (within rules).");
-    }
-    if(raw > RULES.maxMicrosTotal){
-      warnings.push("Clamped to 40 micros max.");
-    }
-
-    if(warnings.length === 0){
-      setStatus("good","Sizing OK. Stop decides size.");
-    }else if(warnings.some(x=>x.includes("0"))){
-      setStatus("warn", warnings.join(" "));
-    }else{
-      setStatus("warn", warnings.join(" "));
-    }
-  }
-
-  function calcGuards(){
-    const loss = num(todayLossEl.value);
-    const trades = num(tradesTodayEl.value);
-
-    const remaining = Math.max(0, RULES.dailyMaxLoss - loss);
-    remainDailyEl.textContent = money0(remaining);
-
-    if(loss >= RULES.dailyMaxLoss){
-      nextMoveEl.textContent = "STOP";
-      setGuard("bad","Daily max loss hit. Stop trading.");
-    }else if(trades >= 2){
-      nextMoveEl.textContent = "STOP";
-      setGuard("warn","2 trades done. Stop trading (Lucid rule).");
-    }else{
-      nextMoveEl.textContent = "TRADE OK";
-      setGuard("good","Trade allowed. 1–2 trades max.");
-    }
+    if(warnings.length === 0) setStatus("good","Sizing OK. Stop decides size.");
+    else setStatus("warn", warnings.join(" "));
   }
 
   function updateAll(){
-    // Ensure MGC always recalculates (bugfix: force numeric normalize)
-    if(symbolEl.value === "MGC"){
-      if(stopEl.value === "") stopEl.value = defaultStop("MGC");
-      if(tpEl.value === "") tpEl.value = defaultTP("MGC");
-    }
-
     calc();
-    calcGuards();
     saveState();
   }
 
-  // ===== Controls =====
-  [riskEl, stopEl, tpEl, todayLossEl, tradesTodayEl].forEach(el=>{
+  // Events
+  [riskEl, stopEl, tpEl].forEach(el=>{
     el.addEventListener("input", updateAll);
     el.addEventListener("change", updateAll);
   });
 
-  clearBtn.addEventListener("click", ()=>{
+  resetBtn.addEventListener("click", ()=>{
     const sym = symbolEl.value;
-    riskEl.value = (sym==="SI") ? "50" : "100";
+    if(sym !== "SI") riskEl.value = defaultRisk(sym);
     stopEl.value = defaultStop(sym);
     tpEl.value = defaultTP(sym);
     updateAll();
   });
 
-  zeroBtn.addEventListener("click", ()=>{
-    riskEl.value = "0";
-    tpEl.value = "0";
-    updateAll();
-  });
-
-  resetDayBtn.addEventListener("click", ()=>{
-    todayLossEl.value = "0";
-    tradesTodayEl.value = "0";
-    updateAll();
-  });
-
-  // ===== Init =====
-  // set initial symbol UI
+  // Init
   setSymbol("MNQ", false);
   restoreState();
   updateAll();
