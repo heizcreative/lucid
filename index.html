@@ -32,13 +32,14 @@
   body{
     font-family:var(--sans);
     color:var(--text);
-    padding:10px;
+    padding:6px; /* smaller */
   }
 
   /* prevent iOS zoom quirks */
   input, button{ font-size:16px; }
 
-  .wrap{ width:100%; max-width:560px; margin:0 auto; }
+  /* smaller container for Notion embeds */
+  .wrap{ width:100%; max-width:460px; margin:0 auto; }
 
   .panel{
     background:var(--panel);
@@ -48,7 +49,7 @@
   }
 
   .top{
-    padding:12px 12px 10px;
+    padding:10px 10px 8px; /* smaller */
     border-bottom:1px solid rgba(255,255,255,.07);
   }
 
@@ -56,20 +57,20 @@
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    gap:10px;
+    gap:8px;
   }
 
   .title{
-    font-size:16px;
+    font-size:14px; /* smaller */
     font-weight:850;
     letter-spacing:.2px;
   }
 
   .formula{
-    margin-top:6px;
+    margin-top:5px;
     font-family:var(--mono);
     color:rgba(255,255,255,.65);
-    font-size:12px;
+    font-size:11px; /* smaller */
     line-height:1.35;
   }
 
@@ -77,32 +78,32 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    padding:8px 12px;
+    padding:7px 10px; /* smaller */
     border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.22);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     font-family:var(--mono);
-    font-size:12px;
+    font-size:11px; /* smaller */
     white-space:nowrap;
   }
 
   .dot{
-    width:10px;height:10px;border-radius:50%;
+    width:9px;height:9px;border-radius:50%;
     box-shadow:0 0 0 4px rgba(255,255,255,.06);
     flex:0 0 auto;
   }
 
-  .content{ padding:12px; }
+  .content{ padding:10px; } /* smaller */
 
   .grid{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap:10px;
+    gap:8px; /* smaller */
   }
 
-  /* phone = one column so nothing cuts */
+  /* phone = one column */
   @media (max-width: 420px){
     .wrap{ max-width: 420px; }
     .grid{ grid-template-columns: 1fr; }
@@ -112,16 +113,16 @@
     border:1px solid rgba(255,255,255,.10);
     background:rgba(0,0,0,.14);
     border-radius:16px;
-    padding:12px;
+    padding:10px; /* smaller */
     min-width:0;
   }
 
   .label{
     font-family:var(--mono);
-    font-size:12px;
+    font-size:11px; /* smaller */
     color:rgba(255,255,255,.70);
     letter-spacing:.2px;
-    margin-bottom:8px;
+    margin-bottom:7px;
   }
 
   .input{
@@ -130,7 +131,7 @@
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.20);
     color:rgba(255,255,255,.92);
-    padding:12px 12px;
+    padding:10px 10px; /* smaller */
     outline:none;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
   }
@@ -138,13 +139,13 @@
 
   .chips{
     display:flex;
-    gap:8px;
+    gap:6px; /* smaller */
     flex-wrap:wrap;
-    margin-top:10px;
+    margin-top:8px;
   }
 
   .chipBtn{
-    padding:10px 12px;
+    padding:9px 10px; /* smaller */
     border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.18);
@@ -152,12 +153,13 @@
     font-family:var(--mono);
     cursor:pointer;
     transition:transform 160ms ease, box-shadow 160ms ease;
+    font-size:12px;
   }
   .chipBtn:active{ transform:scale(.97); }
 
   /* Apple-glass button */
   .btn{
-    padding:10px 12px;
+    padding:9px 10px; /* smaller */
     border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.22);
@@ -168,17 +170,16 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  /* ---- Custom dropdown (animated reveal) ---- */
-  .selectWrap{
-    position:relative;
-  }
+  /* ---- Custom dropdown ---- */
+  .selectWrap{ position:relative; }
+
   .selectBtn{
     width:100%;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    padding:12px 12px;
+    padding:10px 10px; /* smaller */
     border-radius:14px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.22);
@@ -195,7 +196,7 @@
   }
   .selectText{
     font-family:var(--mono);
-    font-size:14px;
+    font-size:13px; /* smaller */
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -231,7 +232,7 @@
     pointer-events:auto;
   }
   .menuItem{
-    padding:12px 12px;
+    padding:10px 10px; /* smaller */
     display:flex;
     align-items:center;
     gap:10px;
@@ -241,12 +242,12 @@
   .menuItem:first-child{ border-top:none; }
   .menuItem:hover{ background:rgba(255,255,255,.05); }
 
-  /* outputs */
+  /* outputs (now ONLY 3 boxes) */
   .outGrid{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap:10px;
-    margin-top:10px;
+    gap:8px;
+    margin-top:8px;
   }
   @media (max-width: 420px){
     .outGrid{ grid-template-columns: 1fr; }
@@ -256,18 +257,18 @@
     border:1px solid rgba(255,255,255,.10);
     background:rgba(0,0,0,.12);
     border-radius:16px;
-    padding:12px;
+    padding:10px; /* smaller */
     min-width:0;
   }
   .outTitle{
     font-family:var(--mono);
     color:rgba(255,255,255,.70);
-    font-size:12px;
+    font-size:11px; /* smaller */
     margin-bottom:6px;
   }
   .outVal{
     font-family:var(--mono);
-    font-size:24px;
+    font-size:22px; /* smaller */
     letter-spacing:.3px;
   }
 
@@ -275,10 +276,10 @@
     display:flex;
     flex-wrap:wrap;
     gap:8px;
-    margin-top:10px;
+    margin-top:8px;
   }
   .miniChip{
-    padding:10px 12px;
+    padding:9px 10px;
     border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.18);
@@ -288,16 +289,17 @@
   }
 
   .status{
-    margin-top:10px;
+    margin-top:8px;
     border:1px solid rgba(255,255,255,.10);
     background:rgba(0,0,0,.14);
     border-radius:16px;
-    padding:12px;
+    padding:10px; /* smaller */
     display:flex;
     align-items:center;
     gap:10px;
     font-family:var(--mono);
     color:rgba(255,255,255,.86);
+    font-size:13px; /* smaller */
   }
   .statusDot{
     width:12px;height:12px;border-radius:50%;
@@ -308,7 +310,7 @@
   .bottomRow{
     display:flex;
     justify-content:flex-end;
-    padding:10px 12px 12px;
+    padding:8px 10px 10px;
     border-top:1px solid rgba(255,255,255,.07);
   }
 </style>
@@ -390,6 +392,7 @@
 
       </div>
 
+      <!-- OUTPUTS: removed the $/POINT box completely -->
       <div class="outGrid">
         <div class="out">
           <div class="outTitle">CONTRACTS</div>
@@ -402,10 +405,6 @@
         <div class="out">
           <div class="outTitle">TP PROFIT ($)</div>
           <div class="outVal" id="outProfit">$—</div>
-        </div>
-        <div class="out">
-          <div class="outTitle" id="unitTitle">$ / POINT</div>
-          <div class="outVal" id="outUnit">$—</div>
         </div>
       </div>
 
@@ -434,7 +433,6 @@
       name: "MNQ",
       pill: "MNQ • $2/pt",
       color: "#28E6A5",
-      unitTitle: "$ / POINT",
       unitValue: 2,
       stopChips: [20,25,30,40],
       tpChips: [60,80,100],
@@ -445,7 +443,6 @@
       name: "MES",
       pill: "MES • $5/pt",
       color: "#28E6A5",
-      unitTitle: "$ / POINT",
       unitValue: 5,
       stopChips: [5,8,10],
       tpChips: [10,12,20],
@@ -456,7 +453,6 @@
       name: "MGC1!",
       pill: "MGC1! • $10/1.0",
       color: "#FFD34D",
-      unitTitle: "$ / 1.0",
       unitValue: 10,
       stopChips: [1,1.5,2,2.5],
       tpChips: [3,4,5,6],
@@ -479,7 +475,6 @@
   const selectChev = document.getElementById("selectChev");
   const menu = document.getElementById("menu");
 
-  const riskLabel = document.getElementById("riskLabel");
   const riskInput = document.getElementById("riskInput");
   const riskChips = document.getElementById("riskChips");
 
@@ -492,8 +487,6 @@
   const outContracts = document.getElementById("outContracts");
   const outRisk = document.getElementById("outRisk");
   const outProfit = document.getElementById("outProfit");
-  const outUnit = document.getElementById("outUnit");
-  const unitTitle = document.getElementById("unitTitle");
 
   const recChips = document.getElementById("recChips");
 
@@ -529,9 +522,6 @@
   }
 
   function setRiskTierStatus(riskVal){
-    // 50–500 => green
-    // 500–1500 => yellow
-    // >1500 => red
     if(!Number.isFinite(riskVal)){
       setStatusDot("warn");
       statusText.textContent = "Enter values to calculate.";
@@ -593,10 +583,6 @@
 
     // formula
     formulaText.textContent = S.formula;
-
-    // unit title/value
-    unitTitle.textContent = S.unitTitle;
-    outUnit.textContent = `$${money(S.unitValue)}`;
 
     // chips
     clearChips(stopChips);
@@ -667,23 +653,19 @@
   // =========================
   // EVENTS
   // =========================
-  // dropdown open/close
   selectBtn.addEventListener("click", () => {
     const open = menu.classList.toggle("open");
     selectChev.style.transform = open ? "rotate(-135deg)" : "rotate(45deg)";
   });
 
-  // click outside to close
   document.addEventListener("click", (e) => {
     if(!e.target.closest(".selectWrap")) closeMenu();
   });
 
-  // select item
   menu.querySelectorAll(".menuItem").forEach(item=>{
     item.addEventListener("click", () => applySymbol(item.dataset.sym));
   });
 
-  // risk chips
   riskChips.querySelectorAll("[data-risk]").forEach(b=>{
     b.addEventListener("click", () => {
       riskInput.value = b.dataset.risk;
@@ -691,12 +673,10 @@
     });
   });
 
-  // inputs
   [riskInput, stopInput, tpInput].forEach(inp=>{
     inp.addEventListener("input", calc);
   });
 
-  // reset
   resetBtn.addEventListener("click", () => {
     riskInput.value = "";
     stopInput.value = "";
@@ -704,7 +684,6 @@
     calc();
   });
 
-  // init
   applySymbol("MNQ");
 </script>
 
