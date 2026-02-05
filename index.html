@@ -35,7 +35,6 @@
     padding:10px;
   }
 
-  /* prevent iOS zoom quirks */
   input, button{ font-size:16px; }
 
   .wrap{ width:100%; max-width:560px; margin:0 auto; }
@@ -47,7 +46,6 @@
     overflow:hidden;
   }
 
-  /* smaller header (you asked) */
   .top{
     padding:8px 10px;
     border-bottom:1px solid rgba(255,255,255,.07);
@@ -60,7 +58,6 @@
     gap:10px;
   }
 
-  /* Squid Game font (put GameOfSquids.ttf next to this HTML) */
   @font-face{
     font-family:"GameOfSquids";
     src:url("./GameOfSquids.ttf") format("truetype");
@@ -84,7 +81,7 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    padding:6px 9px;                 /* slightly smaller */
+    padding:6px 9px;
     border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.22);
@@ -109,7 +106,6 @@
     gap:10px;
   }
 
-  /* phone = one column so nothing cuts */
   @media (max-width: 420px){
     .wrap{ max-width: 420px; }
     .grid{ grid-template-columns: 1fr; }
@@ -162,7 +158,6 @@
   }
   .chipBtn:active{ transform:scale(.97); }
 
-  /* Apple-glass button */
   .btn{
     padding:10px 12px;
     border-radius:999px;
@@ -175,7 +170,6 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  /* ---- Custom dropdown (animated reveal) ---- */
   .selectWrap{ position:relative; }
   .selectBtn{
     width:100%;
@@ -246,7 +240,6 @@
   .menuItem:first-child{ border-top:none; }
   .menuItem:hover{ background:rgba(255,255,255,.05); }
 
-  /* outputs */
   .outGrid{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -281,15 +274,6 @@
     flex-wrap:wrap;
     gap:8px;
     margin-top:10px;
-  }
-  .miniChip{
-    padding:10px 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.18);
-    color:rgba(255,255,255,.80);
-    font-family:var(--mono);
-    font-size:12px;
   }
 
   .status{
@@ -326,7 +310,6 @@
     <div class="top">
       <div class="titleRow">
         <div>
-          <!-- changed to CRTV in Squid font -->
           <div class="title crtTitle">CRTV</div>
         </div>
 
@@ -366,7 +349,6 @@
                 <span class="dot" style="background:#FFD34D"></span>
                 <span class="selectText">MGC1! • $10/1.0</span>
               </div>
-              <!-- ✅ Added BTCUSD (same design) -->
               <div class="menuItem" data-sym="BTCUSD">
                 <span class="dot" style="background:#FF9F43"></span>
                 <span class="selectText">BTCUSD • $/USD move</span>
@@ -413,7 +395,6 @@
           <div class="outTitle">TP PROFIT ($)</div>
           <div class="outVal" id="outProfit">$—</div>
         </div>
-        <!-- removed the $/POINT tile entirely (you asked) -->
       </div>
 
       <div class="miniChips" id="recChips"></div>
@@ -433,126 +414,57 @@
 </div>
 
 <script>
-  // =========================
-  // CONFIG
-  // =========================
   const SYMBOLS = {
-    MNQ: {
-      name: "MNQ",
-      pill: "MNQ • $2/pt",
-      color: "#28E6A5",
-      unitValue: 2,
-      stopChips: [20,25,30,40],
-      tpChips: [60,80,100],
-      rec: [],
-      contractLabel: "CONTRACTS"
-    },
-    MES: {
-      name: "MES",
-      pill: "MES • $5/pt",
-      color: "#28E6A5",
-      unitValue: 5,
-      stopChips: [5,8,10],
-      tpChips: [10,12,20],
-      rec: [],
-      contractLabel: "CONTRACTS"
-    },
-    MGC1: {
-      name: "MGC1!",
-      pill: "MGC1! • $10/1.0",
-      color: "#FFD34D",
-      unitValue: 10,
-      stopChips: [1,1.5,2,2.5],
-      tpChips: [3,4,5,6],
-      rec: [],
-      contractLabel: "CONTRACTS"
-    },
-    // ✅ Added BTCUSD (spot sizing)
-    BTCUSD: {
-      name: "BTCUSD",
-      pill: "BTCUSD • spot sizing",
-      color: "#FF9F43",
-      // For spot BTC:
-      // Dollar Risk = BTC Size × StopDistance($)
-      // Profit      = BTC Size × TPDistance($)
-      // We can reuse the same math by setting unitValue = 1
-      // and treating "stop" as $ distance, "contracts" as BTC size.
-      unitValue: 1,
-      stopChips: [100,200,300,500,1000],
-      tpChips: [200,300,500,1000,2000],
-      rec: [],
-      contractLabel: "BTC SIZE"
-    }
+    MNQ: { name:"MNQ", pill:"MNQ • $2/pt", color:"#28E6A5", unitValue:2, stopChips:[20,25,30,40], tpChips:[60,80,100], rec:[], contractLabel:"CONTRACTS" },
+    MES: { name:"MES", pill:"MES • $5/pt", color:"#28E6A5", unitValue:5, stopChips:[5,8,10], tpChips:[10,12,20], rec:[], contractLabel:"CONTRACTS" },
+    MGC1:{ name:"MGC1!", pill:"MGC1! • $10/1.0", color:"#FFD34D", unitValue:10, stopChips:[1,1.5,2,2.5], tpChips:[3,4,5,6], rec:[], contractLabel:"CONTRACTS" },
+    BTCUSD:{ name:"BTCUSD", pill:"BTCUSD • spot sizing", color:"#FF9F43", unitValue:1, stopChips:[100,200,300,500,1000], tpChips:[200,300,500,1000,2000], rec:[], contractLabel:"BTC SIZE" }
   };
 
-  // =========================
-  // ELEMENTS
-  // =========================
   const pillDot = document.getElementById("pillDot");
   const pillText = document.getElementById("pillText");
-
   const selectBtn = document.getElementById("selectBtn");
   const selectDot = document.getElementById("selectDot");
   const selectText = document.getElementById("selectText");
   const selectChev = document.getElementById("selectChev");
   const menu = document.getElementById("menu");
-
   const riskInput = document.getElementById("riskInput");
   const riskChips = document.getElementById("riskChips");
-
   const stopInput = document.getElementById("stopInput");
   const stopChips = document.getElementById("stopChips");
-
   const tpInput = document.getElementById("tpInput");
   const tpChips = document.getElementById("tpChips");
-
   const outContracts = document.getElementById("outContracts");
   const outRisk = document.getElementById("outRisk");
   const outProfit = document.getElementById("outProfit");
-
   const recChips = document.getElementById("recChips");
-
   const statusDot = document.getElementById("statusDot");
   const statusText = document.getElementById("statusText");
-
   const resetBtn = document.getElementById("resetBtn");
 
-  // =========================
-  // STATE
-  // =========================
   let current = "MNQ";
 
-  // =========================
-  // HELPERS
-  // =========================
   function toNum(v){
     if(v === "" || v == null) return NaN;
     const n = Number(String(v).replace(/,/g,"").trim());
     return Number.isFinite(n) ? n : NaN;
   }
-
   function money(n){
     if(!Number.isFinite(n)) return "—";
     const fixed = Math.round(n * 100) / 100;
     return fixed.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
-
   function setStatusDot(type){
     if(type === "good"){ statusDot.style.background = "var(--good)"; }
     else if(type === "bad"){ statusDot.style.background = "var(--bad)"; }
     else { statusDot.style.background = "var(--warn)"; }
   }
-
   function setRiskTierStatus(riskVal){
-    // 50–500 => green
-    // 500–1500 => yellow
-    // >1500 => red
     if(!Number.isFinite(riskVal)){
       setStatusDot("warn");
       statusText.textContent = "Enter values to calculate.";
       return;
     }
-
     if(riskVal >= 50 && riskVal <= 500){
       setStatusDot("good");
       statusText.textContent = "Risk OK (50–500).";
@@ -568,11 +480,9 @@
       statusText.textContent = "Too much risk (1500+).";
       return;
     }
-
     setStatusDot("warn");
     statusText.textContent = "Risk is under $50.";
   }
-
   function clearChips(el){ el.innerHTML = ""; }
   function addChip(el, label, onClick){
     const b = document.createElement("button");
@@ -582,34 +492,26 @@
     b.addEventListener("click", onClick);
     el.appendChild(b);
   }
-
   function closeMenu(){
     menu.classList.remove("open");
     selectChev.style.transform = "rotate(45deg)";
   }
 
-  // =========================
-  // UI UPDATE
-  // =========================
   function applySymbol(sym){
     current = sym;
     const S = SYMBOLS[current];
 
-    // reset inputs when changing symbol
     riskInput.value = "";
     stopInput.value = "";
     tpInput.value = "";
 
-    // pill
     pillDot.style.background = S.color;
     selectDot.style.background = S.color;
     pillText.textContent = S.pill;
     selectText.textContent = S.name;
 
-    // labels (only change output title, keep design the same)
-    document.querySelector(".outTitle").textContent = S.contractLabel; // first outTitle is "CONTRACTS"
+    document.querySelector(".outTitle").textContent = S.contractLabel;
 
-    // chips
     clearChips(stopChips);
     clearChips(tpChips);
 
@@ -620,10 +522,7 @@
       addChip(tpChips, String(v), () => { tpInput.value = String(v); calc(); });
     });
 
-    // recommendations (kept empty)
     recChips.innerHTML = "";
-
-    // clean outputs
     outContracts.textContent = "—";
     outRisk.textContent = "$—";
     outProfit.textContent = "$—";
@@ -634,9 +533,6 @@
     calc();
   }
 
-  // =========================
-  // CALCULATION
-  // =========================
   function calc(){
     const S = SYMBOLS[current];
     const stop = toNum(stopInput.value);
@@ -652,42 +548,26 @@
       return;
     }
 
-    let size;         // contracts for futures, BTC size for BTCUSD
-    let totalRisk;
-    let profit;
-
     if(current === "BTCUSD"){
-      // Spot BTC:
-      // size (BTC) = risk / stopDistance($)
-      size = risk / stop;
+      const size = Math.max(0, risk / stop);
+      const totalRisk = size * stop;
+      const profit = (Number.isFinite(tp) && tp > 0) ? (size * tp) : 0;
 
-      // cap BTC size so UI doesn't go crazy; keep soft cap, not strict rule
-      // (still allows any size, but prevents absurd display)
-      if(!Number.isFinite(size) || size < 0) size = 0;
-
-      totalRisk = size * stop; // should equal risk
-      profit = (Number.isFinite(tp) && tp > 0) ? (size * tp) : 0;
-
-      // display BTC size with up to 6 decimals
-      outContracts.textContent = Number.isFinite(size) ? size.toFixed(6).replace(/0+$/,"").replace(/\.$/,"") : "—";
+      // ✅ ONE DECIMAL ONLY
+      outContracts.textContent = Number.isFinite(size) ? size.toFixed(1) : "—";
       outRisk.textContent = `$${money(totalRisk)}`;
       outProfit.textContent = `$${money(profit)}`;
-
-      // Bottom alert: just show risk tier (no strict rules)
       setRiskTierStatus(risk);
       return;
     }
 
-    // Futures (original behavior)
     const perPoint = S.unitValue;
     let contracts = Math.floor(risk / (stop * perPoint));
     if(!Number.isFinite(contracts) || contracts < 0) contracts = 0;
-
-    // cap by Lucid max 40 micros (you’re using micros)
     if(contracts > 40) contracts = 40;
 
-    totalRisk = contracts * stop * perPoint;
-    profit = (Number.isFinite(tp) && tp > 0) ? (tp * perPoint * contracts) : 0;
+    const totalRisk = contracts * stop * perPoint;
+    const profit = (Number.isFinite(tp) && tp > 0) ? (tp * perPoint * contracts) : 0;
 
     outContracts.textContent = String(contracts);
     outRisk.textContent = `$${money(totalRisk)}`;
@@ -702,26 +582,19 @@
     setRiskTierStatus(risk);
   }
 
-  // =========================
-  // EVENTS
-  // =========================
-  // dropdown open/close
   selectBtn.addEventListener("click", () => {
     const open = menu.classList.toggle("open");
     selectChev.style.transform = open ? "rotate(-135deg)" : "rotate(45deg)";
   });
 
-  // click outside to close
   document.addEventListener("click", (e) => {
     if(!e.target.closest(".selectWrap")) closeMenu();
   });
 
-  // select item
   menu.querySelectorAll(".menuItem").forEach(item=>{
     item.addEventListener("click", () => applySymbol(item.dataset.sym));
   });
 
-  // risk chips
   riskChips.querySelectorAll("[data-risk]").forEach(b=>{
     b.addEventListener("click", () => {
       riskInput.value = b.dataset.risk;
@@ -729,12 +602,10 @@
     });
   });
 
-  // inputs
   [riskInput, stopInput, tpInput].forEach(inp=>{
     inp.addEventListener("input", calc);
   });
 
-  // reset
   resetBtn.addEventListener("click", () => {
     riskInput.value = "";
     stopInput.value = "";
@@ -742,7 +613,6 @@
     calc();
   });
 
-  // init
   applySymbol("MNQ");
 </script>
 
