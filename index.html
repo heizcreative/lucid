@@ -549,15 +549,22 @@
     }
 
     if(current === "BTCUSD"){
-      const size = Math.max(0, risk / stop);
+      // Raw BTC size from desired risk and stop distance
+      const rawSize = Math.max(0, risk / stop);
+
+      // Like futures: use a tradable size (1 decimal) and round DOWN so you don't exceed risk
+      const size = Math.floor(rawSize * 10) / 10;
+
+      // Real risk/profit based on the size you will actually place
       const totalRisk = size * stop;
       const profit = (Number.isFinite(tp) && tp > 0) ? (size * tp) : 0;
 
-      // ✅ ONE DECIMAL ONLY
       outContracts.textContent = Number.isFinite(size) ? size.toFixed(1) : "—";
       outRisk.textContent = `$${money(totalRisk)}`;
       outProfit.textContent = `$${money(profit)}`;
-      setRiskTierStatus(risk);
+
+      // Use REAL risk for the bottom alert (like futures)
+      setRiskTierStatus(totalRisk);
       return;
     }
 
