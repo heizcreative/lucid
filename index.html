@@ -366,6 +366,11 @@
                 <span class="dot" style="background:#FFD34D"></span>
                 <span class="selectText">MGC1! • $10/1.0</span>
               </div>
+              <!-- ✅ Added BTCUSD (same design) -->
+              <div class="menuItem" data-sym="BTCUSD">
+                <span class="dot" style="background:#FF9F43"></span>
+                <span class="selectText">BTCUSD • $/USD move</span>
+              </div>
             </div>
           </div>
         </div>
@@ -439,7 +444,8 @@
       unitValue: 2,
       stopChips: [20,25,30,40],
       tpChips: [60,80,100],
-      rec: []
+      rec: [],
+      contractLabel: "CONTRACTS"
     },
     MES: {
       name: "MES",
@@ -448,7 +454,8 @@
       unitValue: 5,
       stopChips: [5,8,10],
       tpChips: [10,12,20],
-      rec: []
+      rec: [],
+      contractLabel: "CONTRACTS"
     },
     MGC1: {
       name: "MGC1!",
@@ -457,7 +464,24 @@
       unitValue: 10,
       stopChips: [1,1.5,2,2.5],
       tpChips: [3,4,5,6],
-      rec: []
+      rec: [],
+      contractLabel: "CONTRACTS"
+    },
+    // ✅ Added BTCUSD (spot sizing)
+    BTCUSD: {
+      name: "BTCUSD",
+      pill: "BTCUSD • spot sizing",
+      color: "#FF9F43",
+      // For spot BTC:
+      // Dollar Risk = BTC Size × StopDistance($)
+      // Profit      = BTC Size × TPDistance($)
+      // We can reuse the same math by setting unitValue = 1
+      // and treating "stop" as $ distance, "contracts" as BTC size.
+      unitValue: 1,
+      stopChips: [100,200,300,500,1000],
+      tpChips: [200,300,500,1000,2000],
+      rec: [],
+      contractLabel: "BTC SIZE"
     }
   };
 
@@ -582,6 +606,9 @@
     pillText.textContent = S.pill;
     selectText.textContent = S.name;
 
+    // labels (only change output title, keep design the same)
+    document.querySelector(".outTitle").textContent = S.contractLabel; // first outTitle is "CONTRACTS"
+
     // chips
     clearChips(stopChips);
     clearChips(tpChips);
@@ -625,6 +652,33 @@
       return;
     }
 
+    let size;         // contracts for futures, BTC size for BTCUSD
+    let totalRisk;
+    let profit;
+
+    if(current === "BTCUSD"){
+      // Spot BTC:
+      // size (BTC) = risk / stopDistance($)
+      size = risk / stop;
+
+      // cap BTC size so UI doesn't go crazy; keep soft cap, not strict rule
+      // (still allows any size, but prevents absurd display)
+      if(!Number.isFinite(size) || size < 0) size = 0;
+
+      totalRisk = size * stop; // should equal risk
+      profit = (Number.isFinite(tp) && tp > 0) ? (size * tp) : 0;
+
+      // display BTC size with up to 6 decimals
+      outContracts.textContent = Number.isFinite(size) ? size.toFixed(6).replace(/0+$/,"").replace(/\.$/,"") : "—";
+      outRisk.textContent = `$${money(totalRisk)}`;
+      outProfit.textContent = `$${money(profit)}`;
+
+      // Bottom alert: just show risk tier (no strict rules)
+      setRiskTierStatus(risk);
+      return;
+    }
+
+    // Futures (original behavior)
     const perPoint = S.unitValue;
     let contracts = Math.floor(risk / (stop * perPoint));
     if(!Number.isFinite(contracts) || contracts < 0) contracts = 0;
@@ -632,8 +686,8 @@
     // cap by Lucid max 40 micros (you’re using micros)
     if(contracts > 40) contracts = 40;
 
-    const totalRisk = contracts * stop * perPoint;
-    const profit = (Number.isFinite(tp) && tp > 0) ? (tp * perPoint * contracts) : 0;
+    totalRisk = contracts * stop * perPoint;
+    profit = (Number.isFinite(tp) && tp > 0) ? (tp * perPoint * contracts) : 0;
 
     outContracts.textContent = String(contracts);
     outRisk.textContent = `$${money(totalRisk)}`;
